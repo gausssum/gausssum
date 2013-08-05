@@ -8,7 +8,7 @@
 # received a copy of the license along with cclib. You can also access
 # the full license online at http://www.gnu.org/copyleft/lgpl.html.
 
-__revision__ = "$Revision: 992 $"
+__revision__ = "$Revision: 1043 $"
 
 import numpy
 
@@ -201,7 +201,7 @@ class ccData(object):
             elif v == list and k in self._listsofarrays:
                 setattr(self, k, [numpy.array(x, precision) for x in getattr(self, k)])
             elif v == dict and k in self._dictsofarrays:
-                items = getattr(self, k).iteritems()
+                items = getattr(self, k).items()
                 pairs = [(key, numpy.array(val, precision)) for key, val in items]
                 setattr(self, k, dict(pairs))
 
@@ -233,7 +233,7 @@ class ccData(object):
         """
     
         if type(attributes) is not dict:
-            raise TypeError, "attributes must be in a dictionary"
+            raise TypeError("attributes must be in a dictionary")
     
         valid = [a for a in attributes if a in self._attrlist]
         invalid = [a for a in attributes if a not in self._attrlist]
