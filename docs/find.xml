@@ -1,0 +1,15 @@
+	<chapter>
+		<title>How do I find all lines with a certain phrase?</title>
+		<para>
+			Open the file you wish to search and choose <command>Find</command> from the list of operations on the left.
+		</para>
+		<para>
+			Either choose one of the default search terms or choose Custom. If you choose Custom, enter a search term into the box. Note: you can change the default search terms using the Settings dialog box.
+		</para>
+		<para>
+			Click on the &gs; logo to start the script.
+		</para>
+		<para>
+			If you wish to find all lines containing either TERM_A <emphasis>or</emphasis> TERM_B, then use the following notation, TERM_A%TERM_B, for the search term. Any number of terms may be combined in this way.
+		</para>
+	</chapter>

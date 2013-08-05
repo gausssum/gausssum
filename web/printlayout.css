@@ -1,0 +1,15 @@
+/* Based on a template by Ben Meadowcroft, see http://www.benmeadowcroft.com/webdev/  for more info */
+.title	{ width : 100%;
+	  margin : 1cm;
+	  padding: 0cm;
+	  z-index : 0;}
+
+/* This hides all the menus etc so they aren't printed out*/
+.sidebar{	display:none;}
+
+.contentText {	padding : 0.5cm;
+		margin-top : 0.5cm;
+		margin-right : 0cm;
+		margin-left : 0cm;}
+
+.ahem {display : none}

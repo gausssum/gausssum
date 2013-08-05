@@ -1,0 +1,2 @@
+#!/bin/bash
+scp ../workingwebpage/$1 sf:/home/groups/g/ga/gausssum/htdocs/GaussSum2

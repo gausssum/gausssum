@@ -1,0 +1,87 @@
+	<chapter>
+		<title>How do I extract molecular orbital information?</title>
+		<para>This chapter has been divided into three sections. The first section describes how to extract information on the eigenvalues and symmetries of the molecular orbitals. The second section describes how to extract information on the contributions of groups of atoms to each of the molecular orbitals. The third section describes how to extract information on the nature of the overlap between different groups of atoms.
+		</para>
+		<section>
+			<title>How to extract basic information (DOS)</title>
+			<para>
+				Open the log file containing the relevant information and choose <command>Orbitals</command> from the list of operations on the left. Pick the DOS option. 
+			</para>
+			<para>
+				The boxes labeled "Start" and "End" are the start and end points (in eV) of the density of states spectrum. The box labeled "FWHM" is the full width at half-maximum (in eV) of the gaussian curves used to convolute the DOS and COOP spectra.
+			</para>
+			<para>
+				Click on the &gs; logo to start the script. The molecular orbital information is written to <filename>gausssum&version;/orbital_data.txt</filename>.
+			</para>
+			<para>
+				The density of states (DOS) spectrum is convoluted using Gaussian curves of unit height and the specified full width at half-maximum. Gnuplot is then used to plot the spectrum. The details are written to <filename>gausssum&version;/DOS_spectrum.txt</filename>.
+			</para>
+			<para>
+				If you tick the box labelled "Create originorbs.txt?", a file <filename>gausssum&version;/orginorbs.txt</filename> will be created which can be used to plot the orbital energies as a series of bars, one above the other, using a program such as Origin (Windows) or Grace (Linux). See the worked example on the &gs; web site for more information.
+			</para>
+			<para>
+				Unrestricted calculations are supported for Gaussian. The same files are created but with the data broken down into sections for alpha and beta electrons. The DOS spectrum plotted is also different, containing an alpha DOS, a beta DOS and a (scaled) total DOS. If you ticked the box to create <filename>originorbs.txt</filename>, the beta eigenvalues are listed after all of the alpha eigenvalues.
+			</para>
+		</section>
+
+		<section>
+			<title>How to find the % contribution of a group to each molecular orbital (PDOS)</title>
+			<para>
+				In order to define the atoms which comprise a group, a file, <filename>gausssum&version;/Groups.txt</filename>, should be created with a format similar to the following:
+			</para>
+			<programlisting>
+atoms
+Ru
+1
+bpy1
+2-11,14,17,22,27,34-35,42-43,50,57
+bpy2
+12,16,18-19,25-26,28-30,39-41,44-46,54-56,58,61
+bpy3
+13,15,20-21,23-24,31-33,36-38,47-49,51-53,59-60
+			</programlisting>
+			<para>
+The first line needs to be either "atoms", "orbitals", "allatoms" or "allorbitals". If it is "allatoms" or "allorbitals", then no further input is required and a separate group will be made for each atom or each orbital. Otherwise, as in the example above, you need to describe which atoms or which orbitals are in each group. The numbers correspond to the order of the atoms/orbitals in the output file. An easy way to obtain these for Gaussian calculations is to open the output file in GaussView and turn on the labels. <filename>Groups.txt</filename> needs to obey the following rules:
+			</para>
+			<itemizedlist>
+				<listitem><para>Every atom in the molecule must be listed</para></listitem>
+				<listitem><para>No atom may be listed more than once</para></listitem>
+			</itemizedlist>
+			<para>
+				A single point calculation should be done with the following keywords: (Gaussian) <command>pop=full iop(3/33=1,3/36=-1)</command>, (GAMESS) <command>NPRINT=3</command>. This creates a large log file containing information on the overlap matrix among other things. (Note: the 3/36=-1 option for Gaussian prevents the calculation and printing of the multipole matrices; this is purely to keep the output file size as small as possible. In some cases, for example SCRF calculations, the multipole matrices must be calculated - if so, leave out the 3/36=-1. It will not affect the calculation of the PDOS.)
+			</para>
+			<para>
+				Using &gs; open the log file and choose <command>Orbitals</command>. Pick the DOS option. See the previous section for information on the options.
+			</para>
+			<para>
+				Click on the &gs; logo. &gs; calculates the percent contributions of each of the groups to each of the molecular orbitals. This may take a few minutes. 
+			</para>
+			<para>
+				Afterwards, the partial density of states spectra (PDOS) are plotted. Note that each one is <emphasis>stacked on top of</emphasis> the previous one, which means that the line at the greatest height is equal to the sum of all of the partial density of states, and hence equal to the total density of states spectrum. The stacking order is undefined. Information on the spectra is written to <filename>gausssum&version;/DOS_spectrum.txt</filename> which can be used to plot your own graphs.
+			</para>
+			<para>
+				Information on the molecular orbitals and the percent contributions of the groups is written to <filename>gausssum&version;/orbital_data.txt</filename>. The last few columns of <filename>orbital_data.txt</filename> contain more accurate values for the percent contributions and are used by the <command>Electronic transitions</command> operation. You should not edit this file if you wish to use the information in it to calculate the changes in charge density associated with electronic transitions, as described in <xref linkend="uvvis" />.
+			</para>
+			<para>Note that the percent contributions are calculated based on Mulliken Population Analysis (MPA). MPA has some well-known deficiencies which can lead to unphysical values such as negative percentage contributions. If this happens for an orbital in which you are interested, remember that the exact figures are less important than the trend across a group of compounds.
+			</para>
+			<para>
+				Creation of PDOS spectra is also supported for unrestricted calculations with Gaussian. The spectrum plotted is of the total DOS broken down by the contribution of each of the groups. <filename>orbital_data.txt</filename> contains information on the breakdown of the alpha and beta electrons by group.
+			</para>
+		</section>
+
+		<section>
+			<title>How to find the nature of the overlap between different groups of atoms (COOP)</title>
+			<para>
+				Crystal Orbital Overlap Population (COOP) diagrams were first developed by Huckel. They are especially used in the area of extended solids. They are equivalent to a multiplication of the DOS spectrum and the overlap population (positive or negative) between two groups. In this way, the bond between two groups can be described as bonding or antibonding with respect to each of the molecular orbitals.
+			</para>
+			<para>
+				Exactly the same information as for creating a PDOS diagram is needed for creating a COOP diagram. That is, you need a log file which is the result of a single-point calculation containing the same keywords as described in "How to find the % contribution of a group to each molecular orbital". You also need a file <filename>Groups.txt</filename> describing the groups of interest in the molecule (see "How to find the % contribution of a group to each molecular orbital"). The rules for <filename>Groups.txt</filename> are not as strict in this case: no atom can be listed twice, but not every atom needs to be listed.
+			</para>
+			<para>
+				Choose COOP after picking <command>Orbitals</command>. The options for creating a COOP diagram are the same as for creating a DOS or PDOS diagram.
+			</para>
+			<para>
+				Click on the &gs; logo to calculate the COOP. Information on the overlap is written to <filename>gausssum&version;/COOP_data.txt</filename> and <filename>gausssum&version;/COOP_spectrum.txt</filename>.
+			</para>
+		</section>
+	</chapter>

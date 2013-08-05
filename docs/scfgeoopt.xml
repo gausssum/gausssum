@@ -1,0 +1,42 @@
+	<chapter>
+		<title>How do I follow the progress of an SCF convergence?</title>
+
+		<para>
+			For Gaussian to print SCF convergence information, it is necessary to specify additional print, by using <command>#P</command> in the route section.
+		</para>
+		<para>
+			Using &gs;, open the file you want to examine. Usually this will be the output file of a job which is currently running.
+		</para>
+		<para>
+			Choose <command>Monitor SCF</command> and click on the &gs; logo to run the script. A graph will be plotted of the progress of the SCF convergence versus step number. Details of the SCF cycles are written to the screen. Where there is information on several SCF convergence cycles in a log file (e.g. in the case of a geometry optimisation), &gs; plots the one closest to the end of the file.
+		</para>
+		<para>
+			The progress of the SCF convergence is calculated by considering the convergence criteria. For example, for Gaussian, these criteria are the RMS density, MAX density and change in energy. Each of the current values is divided by the target values. The log is taken of any results greater than 1. The 'progress value' is then calculated by summing the logs. Note that convergence is achieved when the progress value equals 0.
+		</para>
+		<para>
+			You may wish to leave out the initial points, so as to focus on the last few points. You can do this by entering a non-zero value into the box labeled "Leave out the first n points", and re-running the script.
+		</para>
+		<para>
+			Note that, at the moment, this procedure does not work for <command>SCF=QC</command> (Gaussian).
+		</para>
+	</chapter>
+
+	<chapter>
+		<title>How do I follow the progress of a geometry optimisation?</title>
+
+		<para>
+			Using &gs; open the file you want to examine. Usually this will be the output file of a job which is currently running.
+		</para>
+		<para>
+			Choose <command>Monitor GeoOpt</command> and click on the &gs; logo to run the script.
+		</para>
+		<para>
+			Two graphs will be plotted. The first is of energy vs optimisation step. The second is the deviation from the targets vs optimisation step.
+		</para>
+		<para>
+			The deviation is found by considering the convergence criteria. Each of the current values is divided by the target values. The log is taken of any results greater than 1. The deviation is then calculated by summing the logs. Note that convergence is achieved when the progress value equals 0.
+		</para>
+		<para>
+			You may wish to leave out the initial points, so as to focus on the last few points. You can do this by entering a non-zero value into the box labeled "Leave out the first n points", and re-running the script.
+		</para>
+	</chapter>

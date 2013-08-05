@@ -1,0 +1,112 @@
+	<chapter>
+		<title>Installation</title>
+		<para>
+  This chapter describes how to install and run &gs; on computers running Windows or Linux. Note that there are two choices for installing in Windows. One is to install an all-in-one bundle of Python/Numpy/PIL/GaussSum (the easier method), the other is to install the &gs; sources and the required libraries separately.
+		</para>
+
+		<section id="WinInstall" xreflabel="Installing all-in-one on Windows">
+			<title>Installing an all-in-one bundle on Windows</title>
+			<para>Download the quite large all-in-one bundle from <ulink url="http://prdownloads.sourceforge.net/gausssum/GaussSumexe-&pointversion;.zip?download">here</ulink>. Extract the zip file into something like <filename>C:\Program Files\GaussSum2.2</filename>. To run, just doubleclick on <filename>GaussSum.exe</filename>. You may find it useful to create a shortcut on your desktop to <filename>GaussSum.exe</filename> (to do so, right-click on an empty part of the desktop, choose New -> Shortcut, browse to the folder where you installed &gs; and choose <filename>GaussSum.exe</filename>). If you want to set a startup folder, right-click on the icon, choose Properties -> Shortcut -> Start in:, and type the name of the startup folder.
+			</para>
+		</section>
+
+		<section xreflabel="Separate install">
+			<title>Installing the &gs; scripts in Windows</title>
+
+			<sect2 id="WinPyInstall" xreflabel="Installing &py;">
+				<title>Install &py;</title>
+				<para>
+					&gs; requires &py;, which is a programming language commonly used for scripting.
+				</para>
+				<para>
+					Go to the <ulink url="http://www.python.org/download/releases/2.7.3/">Python 2.7 install page</ulink>. Download and run the Windows installer, <filename>Python-2.7.3.msi</filename>. Install it into something like <filename>C:\Python2.7</filename>. &gs; also works well with Python 2.5 and 2.6.
+				</para>
+			</sect2>
+			<sect2 id="WinNumpy" xreflabel="Installing Numpy">
+				<title>Install Numpy</title>
+				<para>
+					&gs; requires Numpy, which is a Python extension that allows efficient matrix algebra.</para>
+				<para>
+					Go to the <ulink url="https://sourceforge.net/projects/numpy/files/NumPy/">Numpy download page</ulink>. Download and run the Windows installer for your version of Python.
+				</para>
+			</sect2>
+			<sect2 id="WinPIL" xreflabel="Installing PIL">
+				<title>Install the Python Imaging Library (PIL)</title>
+				<para>
+					In order to create .png images, &gs; requires the Python Imaging Library, which is a Python package that allows image manipulation.</para> 
+				<para>
+					Go to the <ulink url="http://www.pythonware.com/products/pil/#pil117">PIL download page</ulink>. Download the run the Windows installer for your version of Python.
+				</para>
+			</sect2>
+
+			<sect2 id="WinGauInstall" xreflabel="Install the GaussSum Python scripts and &gp;">
+				<title>Install the &gs; Python scripts and &gp;</title>
+				<para>
+					The scripts can be found <ulink url="http://prdownloads.sourceforge.net/gausssum/GaussSum-&pointversion;.zip?download">here</ulink>. Extract the zip file into something like <filename>C:\Program Files\GaussSum</filename> (note: &gp; is included in this zip file in the sub folder <filename>gnuplot400</filename>).
+				</para>
+				<para>
+					Create a shortcut on your desktop to <filename>GaussSum.py</filename> (to do this, right-click on an empty part of the desktop, choose New -> Shortcut, browse to the folder where you installed &gs; and choose <filename>GaussSum.py</filename>). To change the icon, right-click on the icon, choose Properties -> General -> Change Icon -> Browse. Find the folder where you installed &gs; and choose <filename>GaussSum.ico</filename>. In addition, change the program used to open &gs; by following these instructions: right-click on the icon, choose Properties -> General -> Opens with -> Change -> PythonW. If you want to set a startup folder, right-click on the icon, choose Properties -> Shortcut -> Start in:, and type the name of the startup folder.
+				</para>
+				<para>
+					If you have any questions or requests, or if you wish to be added to the mailing list for information on new versions and bug fixes, please send an email to gausssum-help@lists.sourceforge.net.
+				</para>
+			</sect2>
+			<sect2>
+				<title>Start &gs;</title>
+				<para>
+					Just double-click the shortcut to <filename>GaussSum.py</filename> to start &gs;.
+				</para>
+			</sect2>
+		</section>
+
+		<section>
+			<title>Installing in Linux</title>
+			<sect2>
+				<title>Install &gp;</title>
+				<para>
+					Check to see if you already have &gp;, by typing '<command>which gnuplot</command>' in a shell window. If &gp; is installed, you need to make sure that it is version 4.0 or newer ('<command>gnuplot --version</command>').
+				</para>
+				<para>
+					If you need to install &gp;, rpms are available from <ulink url="http://rpmfind.net/linux/rpm2html/search.php?query=gnuplot&amp;submit=Search+...&amp;system=&amp;arch=i386">rpmfind.net</ulink> and gzipped tar files from <ulink url="http://sourceforge.net/project/showfiles.php?group_id=2055&amp;release_id=129218">SourceForge</ulink>. If you are using Debian Linux, &gp; will be downloaded and installed if you issue the following command as root: '<command>apt-get install gnuplot</command>'.
+				</para>
+			</sect2>
+			<sect2>
+				<title>Install &py;</title>
+				<para>
+					Check to see if you already have &py;, by typing '<command>which python</command>' in a shell window.
+				</para>
+				<para>
+					If you have &py;, type '<command>python</command>'. The version number should be displayed. If this is less than 2.4, the scripts may not work with your currently installed &py; version. (Press 'CTRL+D, ENTER' to exit.)
+				</para>
+				<para>
+					If you need to install Python, follow the appropriate instructions for your system at <ulink url="http://www.python.org">www.python.org</ulink>. You should install the latest version of Python 2.7 (although Python 2.5 and 2.6 also work fine with &gs;). If you are using Debian Linux, &py; will be downloaded and installed if you issue the following command as root: '<command>apt-get install python python-tk</command>'.
+				</para>
+			</sect2>
+			<sect2>
+				<title>Install Numpy</title>
+				<para>
+					Numpy is an extension to Python that allows efficient matrix manipulation. You should try to find a binary package for your system rather than compiling it yourself (check your package management system). If you are using Debian Linux, Numpy will be downloaded and installed if you issue the following command as root: '<command>apt-get install python-numpy python-numpy-ext</command>'.
+				</para>
+			</sect2>
+			<sect2>
+				<title>Install the Python Imaging Library (PIL)</title>
+				<para>The Python Imaging Library is a Python package that allows manipulation of images. &gs; requires PIL to handle PNG images. You can get PIL 1.1.7 from <ulink url="http://www.pythonware.com/products/pil/#pil117">here</ulink> under "Python Imaging Library 1.1.7 Source Kit (all platforms)". This should be untarred into a folder in the usual way, using '<command>tar zxvf Imaging-1.1.7.tar.gz</command>'. Next, go into the folder created and (as root) install the package as follows: '<command>python setup.py install</command>'.</para>
+				<para>If you are using Debian Linux, the Python Imaging Library will be downloaded and installed if you issue the following command as root: '<command>apt-get install python-imaging python-imaging-tk</command>'.</para>
+			</sect2>
+			<sect2>
+				<title>Download &gs;</title>
+				<para>
+					Download a gzipped tar of &gs; <ulink url="http://prdownloads.sourceforge.net/gausssum/GaussSum-&pointversion;.tar.gz?download">here</ulink>. This should be untarred into a folder in the usual way, using '<command>tar zxvf GaussSum-&pointversion;.tar.gz</command>'.
+				</para>
+				<para>
+					If you wish to be added to the mailing list for information on new versions and bug fixes, please send an email to gausssum-help@lists.sourceforge.net.
+				</para>
+			</sect2>
+			<sect2>	
+				<title>Start &gs;</title>
+				<para>
+					To run &gs;, change directory to the &gs; directory and type '<command>python GaussSum.py</command>'. You can also pass a filename as an argument: for example, '<command>python GaussSum.py myoutputfile.out</command>'.
+				</para>
+			</sect2>
+		</section>
+	</chapter>
