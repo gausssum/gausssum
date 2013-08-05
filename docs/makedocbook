@@ -1,0 +1,5 @@
+#!/bin/sh
+ubuntuLocation=/usr/share/xml/docbook/stylesheet/nwalsh/xhtml
+cygwinLocation=/usr/share/docbook-xsl/xhtml
+cygwinLocation2=/usr/share/sgml/docbook/xsl-stylesheets/xhtml
+xsltproc --nonet --stringparam html.stylesheet style.css ${cygwinLocation2}/chunk.xsl GaussSum.xml

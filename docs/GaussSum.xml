@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"file:///usr/share/sgml/docbook/xml-dtd-4.2/docbookx.dtd" [
+<!ENTITY gs "<application>GaussSum</application>">
+<!ENTITY py "Python">
+<!ENTITY gp "Gnuplot">
+<!ENTITY install SYSTEM "install.xml">
+<!ENTITY ir_raman SYSTEM "IR_Raman.xml">
+<!ENTITY uv_vis SYSTEM "UVVis.xml">
+<!ENTITY preface SYSTEM "preface.xml">
+<!ENTITY find SYSTEM "find.xml">
+<!ENTITY gnuplotprobs SYSTEM "gnuplotprobs.xml">
+<!ENTITY scfgeoopt SYSTEM "scfgeoopt.xml">
+<!ENTITY automate SYSTEM "automate.xml">
+<!ENTITY DOS SYSTEM "DOS.xml">
+<!ENTITY version "2.2">
+<!ENTITY pointversion "2.2.6.1">
+]>
+
+<book>
+	<title>GaussSum Version &version;</title>
+	<titleabbrev>GaussSum</titleabbrev>
+
+	<graphic format="GIF" align="Center" width="320" depth="240" fileref="mesh.gif"></graphic>
+
+	&preface;
+
+	&install;
+	
+	&find;
+	
+	&gnuplotprobs;
+
+	&scfgeoopt;
+	
+	&ir_raman;
+	
+	&DOS;
+	
+	&uv_vis;
+
+    &automate;
+
+</book>

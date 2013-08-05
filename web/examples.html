@@ -1,0 +1,51 @@
+<h1>Example scripts using cclib</h1>
+
+
+
+<pre>
+<font color="#a020f0">from</font> cclib.parser <font color="#a020f0">import</font> *
+<font color="#a020f0">from</font> cclib.utils <font color="#a020f0">import</font> *
+
+r = G03(<span style="background-color: #ffffff">&quot;</span><font color="#ff00ff">PhCCCC_gopt.out</font><span style="background-color: #ffffff">&quot;</span>)
+r.parse()
+r.calcscfprogress()
+r.tidyscfprogress().write(<span style="background-color: #ffffff">&quot;</span><font color="#ff00ff">scfprogress.txt</font><span style="background-color: #ffffff">&quot;</span>)
+r.plotscfprogress(<span style="background-color: #ffffff">&quot;</span><font color="#ff00ff">scfprogress.png</font><span style="background-color: #ffffff">&quot;</span>)
+r.calcgeoprogress()
+r.tidygeoprogress().write(<span style="background-color: #ffffff">&quot;</span><font color="#ff00ff">geoprogress.txt</font><span style="background-color: #ffffff">&quot;</span>)
+r.plotgeoprogress(<span style="background-color: #ffffff">&quot;</span><font color="#ff00ff">geoprogress.png</font><span style="background-color: #ffffff">&quot;</span>)
+
+t = G03(<span style="background-color: #ffffff">&quot;</span><font color="#ff00ff">PhCCCC_pop.out</font><span style="background-color: #ffffff">&quot;</span>)
+t.parse()
+t.groups = Groups(t.orbitals,
+                  groups={<span style="background-color: #ffffff">'</span><font color="#ff00ff">C6H4</font><span style="background-color: #ffffff">'</span>:[1,2,3,4,5,6,7,8,19,20],
+                          <span style="background-color: #ffffff">'</span><font color="#ff00ff">C=C</font><span style="background-color: #ffffff">'</span>:[9,10,11,12,13,14,15,16,17,18]},
+                  type=<span style="background-color: #ffffff">&quot;</span><font color="#ff00ff">atoms</font><span style="background-color: #ffffff">&quot;</span>)
+t.pref[<span style="background-color: #ffffff">'</span><font color="#ff00ff">dos.start</font><span style="background-color: #ffffff">'</span>] = -15
+t.pref[<span style="background-color: #ffffff">'</span><font color="#ff00ff">dos.end</font><span style="background-color: #ffffff">'</span>] = 8
+t.pref[<span style="background-color: #ffffff">'</span><font color="#ff00ff">dos.numpoints</font><span style="background-color: #ffffff">'</span>] = 500
+t.calcpdos()
+t.tidypdos().write(<span style="background-color: #ffffff">&quot;</span><font color="#ff00ff">orbital_data.txt</font><span style="background-color: #ffffff">&quot;</span>)
+t.calcdosspectrum()
+t.tidydosspectrum().write(<span style="background-color: #ffffff">&quot;</span><font color="#ff00ff">dosspectrum.txt</font><span style="background-color: #ffffff">&quot;</span>)
+<font color="#0000ff">##t.plotdosspectrum()</font>
+t.calcpdosspectrum()
+t.tidypdosspectrum().write(<span style="background-color: #ffffff">&quot;</span><font color="#ff00ff">pdosspectrum.txt</font><span style="background-color: #ffffff">&quot;</span>)
+<font color="#0000ff">##t.plotpdosspectrum(stacked=True)</font>
+
+u = G03(<span style="background-color: #ffffff">&quot;</span><font color="#ff00ff">PhCCCC_TD.out</font><span style="background-color: #ffffff">&quot;</span>)
+u.pref[<span style="background-color: #ffffff">'</span><font color="#ff00ff">uvvis.start</font><span style="background-color: #ffffff">'</span>] = 170
+u.pref[<span style="background-color: #ffffff">'</span><font color="#ff00ff">uvvis.end</font><span style="background-color: #ffffff">'</span>] = 270
+u.parse()
+u.calcuvspectrum()
+u.tidyuvspectrum().write(<span style="background-color: #ffffff">&quot;</span><font color="#ff00ff">uvspectrum.txt</font><span style="background-color: #ffffff">&quot;</span>)
+u.plotuvspectrum(<span style="background-color: #ffffff">&quot;</span><font color="#ff00ff">uvspectrum.png</font><span style="background-color: #ffffff">&quot;</span>)
+
+v = G03(<span style="background-color: #ffffff">&quot;</span><font color="#ff00ff">PhCCCC_IR.out</font><span style="background-color: #ffffff">&quot;</span>)
+v.parse()
+v.pref[<span style="background-color: #ffffff">'</span><font color="#ff00ff">ir.start</font><span style="background-color: #ffffff">'</span>] = 100
+v.pref[<span style="background-color: #ffffff">'</span><font color="#ff00ff">ir.end</font><span style="background-color: #ffffff">'</span>] = 1100
+v.calcirspectrum()
+v.tidyirspectrum().write(<span style="background-color: #ffffff">&quot;</span><font color="#ff00ff">irspectrum.txt</font><span style="background-color: #ffffff">&quot;</span>)
+v.plotirspectrum(filename=<span style="background-color: #ffffff">&quot;</span><font color="#ff00ff">irspectrum.png</font><span style="background-color: #ffffff">&quot;</span>)
+</pre>

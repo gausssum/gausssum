@@ -1,0 +1,76 @@
+	<chapter>
+		<title>How do I get the IR or Raman spectrum of a molecule?</title>
+		<para>(Gaussian,GAMESS)</para>
+
+		<para>
+			Next, open a log file containing the results of a freq calculation. It isn't necessary to specify whether you wish to calculate the IR or the Raman spectrum - the IR spectrum will always be calculated, and if you ran a <command>freq=raman</command> job, then the Raman activity and Raman intensity spectra will be calculated.
+		</para>
+		<para>
+			Choose <command>Frequencies</command> from the list of operations on the left.
+		</para>
+		<variablelist>
+			<title>Parameters for Frequencies</title>
+			<varlistentry>
+				<term>Start</term>
+				<term>End</term>
+				<listitem>
+					<para>The spectra will be calculated for wavelengths between Start and End. The units of Start and End are cm<superscript>-1</superscript>.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Num pts</term>
+				<listitem>
+					<para>This parameter determines the number of points in the calculated spectra.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>FWHM</term>
+				<listitem>
+					<para>The Full Width at Half Maximum of each peak.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Scaling factor</term>
+				<listitem>
+					<para>You can choose either a general or individual scaling factor (see below).The calculated frequencies are multiplied by the scaling factor. The scaled frequencies are then used to generate the spectra.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Exc. wavelength (nm)</term>
+				<listitem>
+					<para>(Only available for Raman) The value of the excitation wavelength is used to calculate the Raman intensities from the Raman activity (see below) using the equation described by Krishnakumar et al. (J. Mol. Struct., 2004, 702, 9) and Keresztury et al. (Spectrochimica Acta, 1993, 49A, 2007).</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Temp. (K)</term>
+				<listitem>
+					<para>(Only available for Raman) This value determines the temperature used in the Raman intensity equation (see above).</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+
+		<para>
+			Click on the &gs; icon to run the script.
+		</para>
+		<para>
+			The spectra are convoluted with Lorentzian curves and then plotted with Gnuplot.
+		</para>
+		<para>
+			Information on the each spectrum and on the normal modes are written to <filename>gausssum&version;/IRSpectrum.txt</filename> and <filename>gausssum&version;/RamanSpectrum.txt</filename>.
+		</para>
+		<para>
+			The first few lines of an example <filename>IRSpectrum.txt</filename> are shown below. Tabs are used to separate each column of information. This allows easy import into spreadsheet software (e.g. Excel), just by right-clicking on the file and choosing "Open with".
+		</para>
+		<programlisting>
+Spectrum			Normal Modes
+Freq (cm-1)	IR act		Mode	Label	Freq (cm-1)	IR act	Scaling factors	Unscaled freq
+8	0.000612391353264		1	A	466.3941	0.0	1.0	466.3941
+16	0.000624493504806		2	A	466.3945	0.0	1.0	466.3945
+24	0.000636968752613		3	A	698.2427	0.0	1.0	698.2427
+32	0.000649832766662		4	A	698.2429	0.0	1.0	698.2429
+		</programlisting>
+		<para>
+			If you want to use individual scaling factors, you should open a previously created <filename>IRSpectrum.txt</filename> or <filename>RamanSpectrum.txt</filename> and edit the column titled 'Scaling Factors'. You can do this in (for example) Excel, and then save as 'Tab Delimited'. Run the <command>Frequencies</command> option again but choose individual scaling factors this time. The new <filename>IRSpectrum.txt</filename> or <filename>RamanSpectrum.txt</filename> will contain the scaled frequencies.
+		</para>
+			
+	</chapter>

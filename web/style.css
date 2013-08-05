@@ -1,0 +1,116 @@
+/* Based on a template by Ben Meadowcroft, see http://www.benmeadowcroft.com/webdev/  for more info */
+body
+{
+	color : black;
+	background-color : rgb(255,255,255);
+	background-image : url(images/light-balance-small.jpg);
+	background-attachment : fixed;
+	background-position : bottom left;
+	background-repeat : no-repeat;
+	font-family:sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6
+{
+	margin:0px;
+	padding:0px;
+}
+
+h1
+{
+color:rgb(15,90,90);
+}
+
+
+h2
+{
+color:green
+}
+
+h3
+{
+color:purple
+}
+
+pre
+{
+color:rgb(0,0,255);
+}
+
+/*
+ * This ensures that text in paragraphs doesn't
+ * stretch right across the screen. This only works
+ * in more advanced browsers.
+ */.contentText p
+{
+	max-width:45em;
+    text-align:justify;
+}
+.progname
+{
+	color:red;
+}
+ul.menu
+{
+	list-style:none;
+	margin:0px;
+}
+
+ul.menu li
+{
+	display:inline;
+}
+
+.menu
+{
+	text-align : center;
+	background-image : url(images/yellowfilter.gif);
+	border : thin solid rgb(0,0,0);
+	font-weight : bold;
+}
+
+.menu a
+{
+	color : rgb(0,0,0);
+	background-color : inherit;
+}
+
+.menu a:hover
+{
+	color : rgb(255,64,64);
+	background-color : rgb(230,230,250);
+}
+
+
+.menu strong
+{
+	font-size : large;
+}
+
+.other
+{
+	text-align : center;
+	background-image : url(images/redfilter.gif);
+	border : thin solid rgb(0,0,0);
+	background-color : inherit;
+	color : rgb(0,0,0);
+	font-weight : bold;
+}
+
+.contentText
+{
+	color : rgb(0,0,0);
+	background-color : rgb(255,255,255);
+	border : thin solid;
+}
+
+.footer
+{
+	background-image : url(images/redfilter.gif);
+}
+
+.footer a:link
+{
+	color: rgb(0,0,0);
+	background-color:transparent;
+}

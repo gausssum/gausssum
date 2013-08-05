@@ -1,0 +1,38 @@
+	<chapter>
+		<title>How can I automate spectra generation for multiple files? [Advanced]</title>
+		<para>If you have a large number of log files, you may find it slow to use &gs; to generate spectra for each file one-by-one. In order to speed things up, it is possible to write a Python script to automate this process. The following sections give example Python scripts that you could use. You should try to understand these before adapting them for your own purposes.
+		</para>
+		<section>
+			<title>Generate UV-Vis spectra for multiple files</title>
+			<para>
+            This example script generates a UV-Vis spectrum for each ".out" file in the current directory. Before running, you should set the PYTHONPATH to the directory containing GaussSum.py and make sure that there is no existing GaussSum output folder present.
+            </para>
+                <programlisting>
+import os
+import sys
+import glob
+import logging
+
+from gausssum.electrontrans import ET
+from gausssum.cclib.parser import ccopen
+
+ver = "&version;"
+def gaussdir(filename):
+    return os.path.join(os.path.dirname(filename), "gausssum%s" % ver)
+
+if __name__ == "__main__":
+    start, end = 200, 500
+    numpts, fwhm = 500, 3000
+
+    filenames = glob.glob("*.out")
+    for filename in filenames:
+        log = ccopen(filename)
+        log.logger.setLevel(logging.ERROR)
+        data = log.parse(filename)
+
+        ET(None, sys.stdout, data, filename, start, end, numpts, fwhm, True,
+           None, False)
+        os.rename(gaussdir(filename), filename.split(".")[0] +"_gs")
+    </programlisting>
+		</section>
+	</chapter>

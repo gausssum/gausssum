@@ -1,0 +1,42 @@
+#!/bin/sh
+ver=`cat version.txt | tr -d "\r"`
+echo Version "$ver"
+dist=dist
+distdir=${dist}/GaussSum-$ver
+source=src
+img=logo
+docs=docs
+here=`pwd`
+
+# rm -fr $dist
+mkdir $dist
+
+###################### Linux
+
+echo Creating the Linux source distribution...
+chmod a-x $source/gausssum/*.py $source/gausssum/*.gif
+chmod a-x $source/gausssum/cclib/*.py 
+chmod a-x $source/gausssum/cclib/parser/*.py 
+
+mkdir $distdir
+cp $source/*.py $distdir
+
+mkdir $distdir/gausssum
+cp $source/gausssum/*.py $source/gausssum/*.gif $distdir/gausssum
+mkdir $distdir/gausssum/cclib
+mkdir $distdir/gausssum/cclib/parser
+cp $source/gausssum/cclib/*.py $distdir/gausssum/cclib
+cp $source/gausssum/cclib/parser/*.py $distdir/gausssum/cclib/parser
+
+cp $img/*.ico $img/*.gif $distdir
+
+mkdir $distdir/Docs
+cp $docs/*.html $docs/*.gif $docs/*.css $distdir/Docs
+
+cd $dist
+tar cf GaussSum-${ver}.tar GaussSum-${ver}
+gzip GaussSum-${ver}.tar
+cd ..
+rm -rf $distdir
+
+######################## Finished

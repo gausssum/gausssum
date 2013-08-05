@@ -1,0 +1,13 @@
+#!/bin/bash
+dest=website
+rm -rf $dest
+mkdir $dest
+for file in `ls *.html`
+	do 
+		title=`head -1 $file | sed 's/<h1>//g' | sed 's/<\/h1>//g'`
+		sed "s/home page/$title/g" start.htm > tmp.txt
+ 		cat tmp.txt $file finish.htm > $dest/$file
+	done
+cat start.htm index.html finish.htm > $dest/index.html
+cp *.css $dest
+rm tmp.txt

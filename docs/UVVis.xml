@@ -1,0 +1,55 @@
+<chapter id="uvvis">
+		<title>How do I get the UV-Vis or circular dichroism spectrum of a molecule?</title>
+		<section>
+		<title>The UV-visible spectrum</title>
+			<para>
+			Open a log file that is the result of a TD-DFT calculation. For best results, a Gaussian TD-DFT calculation should include the following keyword "<command>IOP(9/40=2)</command>".
+		</para>
+		<para>
+			Choose the <command>Electronic transitions</command> from the list of operations on the left.
+		</para>
+		<para>
+			Choose the start and end (in nm) of the convoluted spectrum, as well as the number of points you wish to have in the calculated spectrum. FWHM refers to the full width at half-maximum of the gaussian curves used to convolute the spectrum. FWHM should be entered in cm<superscript>-1</superscript>.
+		</para>
+		<para>
+			After you have set the various parameters, click on the &gs; logo to run convolute the spectrum.
+		</para>
+		<para>
+			The details are written to <filename>gausssum&version;/UVSpectrum.txt</filename> and <filename>gausssum&version;/UVData.txt</filename>. The file <filename>UVData.txt</filename> contains information on the contribution of singly-excited configurations to each electronic transition.
+		</para>
+		<para>
+			If there is a file in the <filename class="directory">gausssum&version;</filename> directory called <filename>orbital_data.txt</filename> containing information on the percent contributions of various groups (e.g. ligands and metal centers) to the various molecular orbitals, &gs; will use that data. It will calculate, for each transition, the change in charge density on each group. This information will be added to <filename>gausssum&version;/UVData.txt</filename>. (For more information, please see "How to find the % contribution of a group to each molecular orbital".)
+		</para>
+        <para>
+            For information on the formula used to convolute the UV-Vis spectrum, please see <ulink url="http://gausssum.sourceforge.net/GaussSum_UVVis_Convolution.pdf">this pdf</ulink>.
+        </para>
+		</section>
+		<section>
+		<title>The circular dichroism spectrum</title>
+			<para>
+			Open a log file that is the result of a TD-DFT calculation. For best results, a Gaussian TD-DFT calculation should include the following keyword "<command>IOP(9/40=2)</command>".
+		</para>
+		<para>
+			From the list of operations on the left, choose <command>Electronic transitions</command>.
+		</para>
+		<para>
+			Choose the start and end (in nm) of the convoluted spectrum, as well as the number of points you wish to have in the calculated spectrum. Sigma refers to the width of the band at 1/e height for the gaussian curves used to convolute the spectrum. The units for sigma are eV. (The equation used is Equation 8 from Stephens and Harada, Chirality, 2010, 22, 229-233. Delta in that equation is Sigma/2.)
+		</para>
+		<para>
+			After you have set the various parameters, click on the &gs; logo to convolute the spectrum. The details are written to <filename>gausssum&version;/CDSpectrum.txt</filename>.
+		</para>
+		</section>
+		<section>
+		<title>The electron density difference map (EDDM) [Gaussian only]</title>
+			<para>
+An EDDM is a representation of the changes in electron density that occur for a given electronic transition. It is calculated using the information on the single-excited configurations that contribute to each transition. The relative contribution is based on the square of the configuration's coefficient. Note that for some programs (e.g. Gaussian) these squares are not guaranteed to sum to 1.0 and so should not be regarded as scientifically accurate. However, they should be sufficient for the purposes of generating a diagram.
+</para>
+<para>
+After you have plotted the UV-Vis or circular dichroism spectrum, copy a checkpoint file (or formatted checkpoint file) into the gausssum&version; directory. Then select "Electronic transitions" and choose the "Create EDDM script?" option. Click on the &gs; logo to convolute the spectrum and generate <filename>gausssum&version;/eddm.bat</filename> (<filename>gausssum&version;/eddm.sh</filename> on Linux).
+		</para>
+		<para>
+Next you need to set the environment variable G03DIR to the directory containing the Gaussian binaries. To generate the EDDM, at a command prompt run "eddm.bat N", where N is the transition number (starting from 1 for the lowest energy transition).
+		</para>
+		</section>
+
+	</chapter>
