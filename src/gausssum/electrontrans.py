@@ -22,10 +22,10 @@ import glob
 from gausssum.utils import GaussianSpectrum, levelname, percent
 from gausssum.cclib.parser.utils import convertor
 
-from Tkinter import *
-from gnupy import Gnuplot
-from plot import DisplayPlot
-from folder import folder
+# from Tkinter import *
+from .gnupy import Gnuplot
+from .plot import DisplayPlot
+from .folder import folder
 
 def createEDDM(screen, logfile, contrib, gaussdir, unres):
 

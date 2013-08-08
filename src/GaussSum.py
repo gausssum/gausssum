@@ -13,7 +13,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 
-from Tkinter import *   # GUI stuff
+from tkinter import *   # GUI stuff
 from gausssum import gausssumgui
 
 if __name__=="__main__":

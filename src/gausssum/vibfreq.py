@@ -16,9 +16,9 @@ import os
 import math
 import gausssum.utils
 
-from plot import DisplayPlot
-from gnupy import Gnuplot
-from folder import folder
+from .plot import DisplayPlot
+from .gnupy import Gnuplot
+from .folder import folder
 
 def activity_to_intensity(activity, frequency, excitation, temperature):
     """Convert Raman acitivity to Raman intensity according to
@@ -86,13 +86,13 @@ def Vibfreq(root,screen,logfile,logfilename,start,end,numpts,FWHM,typeofscale,sc
         
         # Convolute the spectrum
         spectrum = gausssum.utils.Spectrum(start,end,numpts,
-                                           [zip(freq,act)],
+                                           [list(zip(freq,act))],
                                            FWHM,gausssum.utils.lorentzian)
         if name == "Raman":
             intensity = [activity_to_intensity(activity, frequency, excitation, temperature)
                          for activity, frequency in zip(act, freq)]
             spectrum_intensity = gausssum.utils.Spectrum(start,end,numpts,
-                                           [zip(freq, intensity)],
+                                           [list(zip(freq, intensity))],
                                            FWHM,gausssum.utils.lorentzian)
 
         outputfile = open(os.path.join(gaussdir,filename),"w")

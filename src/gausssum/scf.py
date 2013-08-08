@@ -16,10 +16,10 @@ import os
 import sys
 import math
 
-from plot import DisplayPlot
-from gnupy import Gnuplot
+from .plot import DisplayPlot
+from .gnupy import Gnuplot
 from tempfile import mkstemp
-from Tkinter import *
+# from Tkinter import *
 
 def SCF(root,screen,logfile,numpoints,gnuplotexec):
     
@@ -42,7 +42,7 @@ def SCF(root,screen,logfile,numpoints,gnuplotexec):
         h.commands("set yrange [0:*]")
         h.commands("set xlabel 'SCF convergence step'")
         h.commands("set ylabel 'Deviation from targets'")
-        data = zip(range(len(deviation)-numpoints),deviation[numpoints:])
+        data = list(zip(range(len(deviation)-numpoints),deviation[numpoints:]))
         h.data(data,"notitle with lines")
         h.data(data,"notitle")
 

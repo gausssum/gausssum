@@ -12,14 +12,14 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 
-from Tkinter import *   # GUI stuff
-import tkMessageBox     # For the About Dialog
-import tkFileDialog     # For the Open File and Save File
+from tkinter import *   # GUI stuff
+import tkinter.messagebox     # For the About Dialog
+import tkinter.filedialog     # For the Open File and Save File
 import webbrowser
-import tkSimpleDialog
+import tkinter.simpledialog
 import traceback
 import copy             # For deepcopy...until I find a better way of doing this
-import ConfigParser     # For writing the settings to an .ini file
+import configparser     # For writing the settings to an .ini file
 import logging
 import glob
 
@@ -54,10 +54,10 @@ class App:    # This sets up the GUI
         self.frame1.grid()
         frame2=Frame(self.root)
         frame2.grid(row=1)
-        
+
         self.scrollbar=Scrollbar(frame2)
         self.scrollbar.pack(side=RIGHT,fill=Y)
-        if sys.platform == "win32": 
+        if sys.platform == "win32":
             self.txt=Text(frame2,font=("Courier New",8),yscrollcommand=self.scrollbar.set,width=90,height=21)
         else: # Avoid font problems (? I don't remember the reason for this)
             self.txt=Text(frame2,yscrollcommand=self.scrollbar.set,width=90,height=21)
@@ -98,16 +98,16 @@ class App:    # This sets up the GUI
 ##        self.b7=Radiobutton(frame3, text="NMR.py (beta)", variable=self.script, value="NMR", command=self.option,state=DISABLED)
 ##        self.b7.pack(anchor=W)
 
-        self.b3.select(); 
+        self.b3.select()
 
         self.frame5=Frame(self.frame1)
         self.frame5.pack(side=LEFT)
         self.photo = PhotoImage(file=os.path.join(installlocation,"mesh2.gif")) # Doesn't work if don't use self.
-        Button(self.frame5,image=self.photo,command=self.runscript).pack(side=LEFT)        
+        Button(self.frame5,image=self.photo,command=self.runscript).pack(side=LEFT)
         self.root.bind("<Return>", self.runscript)
-        
-        x=(self.root.winfo_screenwidth()-652)/2 # The window is 652x480
-        y=(self.root.winfo_screenheight()-580)/2
+
+        x = (self.root.winfo_screenwidth()-652)//2 # The window is 652x480
+        y = (self.root.winfo_screenheight()-580)//2
         self.root.geometry("652x480+"+str(x)+"+"+str(y)) # Get the window dead-centre
 
         self.error=ErrorCatcher()
@@ -124,7 +124,7 @@ class App:    # This sets up the GUI
                     os.chdir(t)
                 # Create an instance of the parser
                 self.logfile = ccopen(self.inputfilename)
-                self.fileopenednow()                
+                self.fileopenednow()
             else:
                 self.screen.write(argv[1]+" does not exist or is not a valid filename\n")
                 self.inputfilename=None
@@ -162,7 +162,7 @@ class App:    # This sets up the GUI
             frame8.pack(side=TOP)
             frame9=Frame(self.frame4)
             frame9.pack(side=TOP)
-			
+
             Label(frame5,text="Start:").pack(side=LEFT)
             self.start=Entry(frame5,width=5)
             self.start.pack(side=LEFT)
@@ -179,7 +179,7 @@ class App:    # This sets up the GUI
             self.FWHM=Entry(frame5,width=3)
             self.FWHM.pack(side=LEFT)
             self.FWHM.insert(0,self.settings['ir_raman.fwhm'])
-			
+
             Label(frame6,text="Scaling factors:").pack(side=LEFT)
             self.scale=StringVar()
             r=Radiobutton(frame6,text="General",variable=self.scale,value="Gen")
@@ -204,7 +204,7 @@ class App:    # This sets up the GUI
             if not hasattr(self.data, "vibramans"):
                 self.excitation.configure(state=DISABLED)
                 self.temperature.configure(state=DISABLED)
-            
+
         elif s=="FIND":
             frame6=Frame(self.frame4)
             frame6.pack(side=LEFT)
@@ -241,7 +241,7 @@ class App:    # This sets up the GUI
             self.MOCOOP=Radiobutton(frame8, text="COOP", variable=self.MOplot, value=True)
             self.MOCOOP.pack(anchor=W)
             self.MODOS.select()
-            
+
             Label(frame6,text="Start:").pack(side=LEFT)
             self.start=Entry(frame6,width=5)
             self.start.pack(side=LEFT)
@@ -258,13 +258,13 @@ class App:    # This sets up the GUI
             self.makeorigin=IntVar()
             self.makeoriginbtn=Checkbutton(frame7,text="Create originorbs.txt?",variable=self.makeorigin)
             self.makeoriginbtn.pack(anchor=W)
-            
 
-	elif s=="UVVIS":
-	    frame7=Frame(self.frame4)
-	    frame7.pack(side=TOP)
-	    frame6=Frame(self.frame4)
-	    frame6.pack()
+
+        elif s=="UVVIS":
+            frame7=Frame(self.frame4)
+            frame7.pack(side=TOP)
+            frame6=Frame(self.frame4)
+            frame6.pack()
 
             self.UVplot=IntVar()
             self.UVbox=Radiobutton(frame7, text="UV-Visible", variable=self.UVplot, command=self.UVupdate, value=True)
@@ -279,7 +279,7 @@ class App:    # This sets up the GUI
             self.start.grid(row=0,column=1)
             self.start.insert(0,self.settings['uvvis.start'])
             Label(frame6,text="End:").grid(row=0,column=2)
-            Label(frame6,text="nm").grid(row=1,column=3)            
+            Label(frame6,text="nm").grid(row=1,column=3)
             self.end=Entry(frame6,width=5)
             self.end.grid(row=0,column=3)
             self.end.insert(0,self.settings['uvvis.end'])
@@ -345,7 +345,7 @@ class App:    # This sets up the GUI
         self.nmrrb2a.configure(state=DISABLED)
         self.nmrrb2b.configure(state=DISABLED)
 
- 
+
     def nmrrbcb(self):
 # What to do when the user chooses one of the NMR radiobuttons
 # (NMR RadioButton CallBack)
@@ -354,7 +354,7 @@ class App:    # This sets up the GUI
             self.nmrlbx1.configure(state=NORMAL)
         else:
             self.nmrlbx1.configure(state=DISABLED)
-        
+
         if value=="Extract": # Configure everything
             self.nmrrb2a.configure(state=DISABLED)
             self.nmrrb2b.configure(state=DISABLED)
@@ -370,13 +370,13 @@ class App:    # This sets up the GUI
         if self.UVplot.get()==False:
             # Choose CD
             self.fwhmlabel.configure(text="sigma:")
-            self.fwhmunits.configure(text="eV")            
+            self.fwhmunits.configure(text="eV")
             self.FWHM.delete(0,END)
             self.FWHM.insert(0,self.settings['uvvis.sigma'])
         else:
             # Choose UVVis
             self.fwhmlabel.configure(text="FWHM:")
-            self.fwhmunits.configure(text="1/cm")            
+            self.fwhmunits.configure(text="1/cm")
             self.FWHM.delete(0,END)
             self.FWHM.insert(0,self.settings['uvvis.fwhm'])
 
@@ -387,7 +387,7 @@ class App:    # This sets up the GUI
         if not self.inputfilename:
             self.screen.write("You need to open a log file first\n")
             return   # Do nothing if no file opened
-        
+
         s = self.script.get()
         self.txt.delete(1.0, END)
 
@@ -401,7 +401,7 @@ class App:    # This sets up the GUI
             elif s=="GEOOPT":
                 if self.reparse.get():
                     self.data = self.logfile.parse()
-                worked = GeoOpt(self.root,self.screen,self.data,int(self.numpts.get()),self.settings['global settings.gnuplot'])                
+                worked = GeoOpt(self.root,self.screen,self.data,int(self.numpts.get()),self.settings['global settings.gnuplot'])
             elif s=="IR_RAMAN":
                 worked = Vibfreq(self.root,self.screen,self.data,self.logfile.filename,int(self.start.get()),int(self.end.get()),int(self.numpts.get()),float(self.FWHM.get()),self.scale.get(),float(self.scalefactor.get()),float(self.excitation.get()),float(self.temperature.get()),self.settings['global settings.gnuplot'])
             elif s=="FIND":
@@ -428,11 +428,11 @@ class App:    # This sets up the GUI
 ##                                        selected,self.nmrrb2.get(),self.nmrstandards)
         except:
             traceback.print_exc(file=self.error) # Catch errors from the python scripts (user GIGO errors, of course!)
-            tkMessageBox.showerror(title="The script is complaining...",message=self.error.log)
+            messagebox.showerror(title="The script is complaining...",message=self.error.log)
             self.error.clear()
         self.root.update()
 
-     
+
     def addmenubar(self):
         """Set up the menubar."""
         menu = Menu(self.root)
@@ -454,13 +454,13 @@ class App:    # This sets up the GUI
         helpmenu.add_command(label="Documentation",underline=0, command=self.webdocs)
         helpmenu.add_separator()
         helpmenu.add_command(label="About...", underline=0, command=self.aboutdialog)
-        
+
     def aboutdialog(self,event=None): # Soaks up event if provided
         d=AboutPopupBox(self.root,title="About GaussSum")
 
     def showerrors(self):
         self.screen.write("Log of error messages\n%s\n%s\n" % ('*'*20,self.error.longlog) )
-                              
+
     def fileexit(self):
         self.root.destroy()
 
@@ -469,8 +469,8 @@ class App:    # This sets up the GUI
             mydir=os.path.dirname(self.inputfilename)
         else:
             mydir="."
-                  
-        inputfilename=tkFileDialog.askopenfilename(
+
+        inputfilename = tkinter.filedialog.askopenfilename(
                 filetypes=[
                     ("All files",".*"),
                     ("Output Files",".out"),
@@ -491,9 +491,9 @@ class App:    # This sets up the GUI
 
     def fileopenednow(self):
         """What to do once a file is opened."""
-        
+
         if self.logfile==None:
-            tkMessageBox.showerror(
+            messagebox.showerror(
                 title="Not a valid log file",
                 message=("cclib does not recognise %s as a valid logfile.\n\n"
                         "If the file *is* valid, please send an email to "
@@ -502,17 +502,17 @@ class App:    # This sets up the GUI
             for button in [self.b0, self.b1, self.b2, self.b3, self.b4, self.b5]:
                 button.configure(state=DISABLED)
             return
-        
+
         # Prevent the logger writing to stdout; instead, write to screen
         self.logfile.logger.removeHandler(self.logfile.logger.handlers[0])
         newhandler = logging.StreamHandler(self.screen)
         newhandler.setFormatter(logging.Formatter("[%(name)s %(levelname)s] %(message)s"))
         self.logfile.logger.addHandler(newhandler)
-        
+
         try:
             self.data = self.logfile.parse()
         except:
-            tkMessageBox.showerror(
+            messagebox.showerror(
                 title="Problems parsing the logfile",
                 message=("cclib has problems parsing %s.\n\n"
                         "If you think it shouldn't, please send an email to "
@@ -521,7 +521,7 @@ class App:    # This sets up the GUI
             for button in [self.b0, self.b1, self.b2, self.b3, self.b4, self.b5]:
                 button.configure(state=DISABLED)
             return
-        
+
         self.screen.write("Opened and parsed %s.\n" % self.inputfilename)
         has = lambda x: hasattr(self.data, x)
         self.b3.configure(state=NORMAL) # Search
@@ -602,15 +602,15 @@ class App:    # This sets up the GUI
         if os.path.isfile(settingsfile): # Check for settings file
             # Found it! - so read it in.
             self.settings.update(readinconfigfile(settingsfile))
-            
+
         else: # Initialise the settings file (and directory)
             settingsdir = os.path.dirname(settingsfile)
             if not os.path.isdir(settingsdir):
                 os.mkdir(settingsdir)
 
             self.saveprefs() # Save the inital settings file
- 
+
     def webdocs(self):
         webbrowser.open(os.path.join(installlocation,"..","Docs","index.html"))
-    
+
 
