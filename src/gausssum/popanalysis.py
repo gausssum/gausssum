@@ -20,10 +20,9 @@ import sys
 import numpy
 import numpy.oldnumeric as Numeric
 from math import exp,log
-from Tkinter import *
-from plot import DisplayPlot
-from gnupy import Gnuplot
-from folder import folder
+from .plot import DisplayPlot
+from .gnupy import Gnuplot
+from .folder import folder
 from gausssum.utils import levelname
 from gausssum.utils import GaussianSpectrum
 from gausssum.utils import Groups
@@ -121,7 +120,7 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,g
         else:
             outputfile.write("\nGroups:\t"+str(len(groups.groups))+"\n")
             line = []
-            for k,v in groups.groups.iteritems():
+            for k,v in groups.groups.items():
                 line.append("%s\t%s" % (k," ".join(map(str,v))))
             outputfile.write("\n".join(line) + "\n")
 

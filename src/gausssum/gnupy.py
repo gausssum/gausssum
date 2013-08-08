@@ -16,13 +16,12 @@
 """
 
 # For Gnuplot
-import os,sys,string
+import os, sys
 from tempfile import mkstemp
 
 # For DisplayImage
-from Tkinter import *
-import tkMessageBox, tkFileDialog, shutil
-    
+from tkinter import *
+
 
 class Gnuplot(object):
     """Simple interface to Gnuplot that uses os.system.
@@ -57,15 +56,15 @@ class Gnuplot(object):
         """Add a list of commands for the plot."""
         self.settings.extend(listofcommands)
 
-    def data(self,tuples,style):
+    def data(self, mtuples, style):
         """Save the data to a temporary file."""
-        filedes,filename = mkstemp() # filedes is the "file descriptor"
+        filedes, filename = mkstemp() # filedes is the "file descriptor"
 
         self.filedata.append( (filedes,filename) )
 
         output = open(filename,"w")
-        for tuple in tuples:
-            line = map(str,tuple)
+        for mtuple in mtuples:
+            line = map(str, mtuple)
             output.write("\t".join(line)+"\n")
         output.close()
 
@@ -112,15 +111,15 @@ class Gnuplot(object):
 
     def __del__(self):
         """Remove temporary files."""
-        for tuple in self.filedata:
-            os.close(tuple[0]) # Close the file descriptor
-            os.remove(tuple[1]) # Remove the temporary file
+        for mtuple in self.filedata:
+            os.close(mtuple[0]) # Close the file descriptor
+            os.remove(mtuple[1]) # Remove the temporary file
 
     def _fixname(self,filename):
         """Replace " and \ by their escaped equivalents."""
         # Taken from gnuplot-py (Michael Haggerty)
         for c in ['\\', '\"']:
-            filename = string.replace(filename, c, '\\' + c)
+            filename = filename.replace(c, '\\' + c)
 
         return filename
 

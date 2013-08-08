@@ -16,9 +16,9 @@ import os
 import sys
 import math
 
-from Tkinter import *
-from plot import DisplayPlot
-from gnupy import Gnuplot
+# from Tkinter import *
+from .plot import DisplayPlot
+from .gnupy import Gnuplot
 from tempfile import mkstemp
 
 def GeoOpt(root,screen,logfile,numpts,gnuplotexec):
@@ -39,7 +39,7 @@ def GeoOpt(root,screen,logfile,numpts,gnuplotexec):
         g = Gnuplot(gnuplotexec)
         g.commands("set xlabel 'Optimisation Step'")
         g.commands("set ylabel 'Energy'")
-        data = zip(range(len(logfile.scfenergies)-numpts),logfile.scfenergies[numpts:])
+        data = list(zip(range(len(logfile.scfenergies)-numpts),logfile.scfenergies[numpts:]))
         g.data(data,"notitle with lines")
         g.data(data,"notitle")
 
@@ -51,7 +51,7 @@ def GeoOpt(root,screen,logfile,numpts,gnuplotexec):
             h.commands("set yrange [0:]")
             h.commands("set xlabel 'Optimisation Step'")
             h.commands("set ylabel 'Deviation from targets'")
-            data = zip(range(len(deviation)-numpts),deviation[numpts:])
+            data = list(zip(range(len(deviation)-numpts),deviation[numpts:]))
             h.data(data,"notitle with lines")
             h.data(data,"notitle")
 

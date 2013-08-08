@@ -1,6 +1,6 @@
 #
 # GaussSum (http://gausssum.sf.net)
-# Copyright (C) 2006-2009 Noel O'Boyle <baoilleach@gmail.com>
+# Copyright (C) 2006-2013 Noel O'Boyle <baoilleach@gmail.com>
 #
 # This program is free software; you can redistribute and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -12,14 +12,14 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 
-from Tkinter import *   # GUI stuff
-import tkMessageBox     # For the About Dialog
-import tkFileDialog     # For the Open File and Save File
+from tkinter import *   # GUI stuff
+import tkinter.messagebox     # For the About Dialog
+import tkinter.filedialog     # For the Open File and Save File
 import webbrowser
-import tkSimpleDialog
+import tkinter.simpledialog
 import traceback
 import copy             # For deepcopy...until I find a better way of doing this
-import ConfigParser     # For writing the settings to an .ini file
+import configparser     # For writing the settings to an .ini file
 
 from gausssum.plot import DisplayPlot
 from gausssum.gnupy import Gnuplot
@@ -28,7 +28,7 @@ import os
 import sys
 import string
 
-class PreferencesPopupBox(tkSimpleDialog.Dialog):
+class PreferencesPopupBox(simpledialog.Dialog):
 
     def __init__(self, parent, settings, title = None): # Override (just to set the geometry!)
 
@@ -187,8 +187,8 @@ class PreferencesPopupBox(tkSimpleDialog.Dialog):
             self.uvvis[i].delete(0,END)
             self.uvvis[i].insert(0,self.settings['uvvis.%s'%(a[i])])
 
-        x=(652-450)/2+self.parent.winfo_rootx()
-        y=(480-410)/2+self.parent.winfo_rooty()
+        x = (652-450)//2 + self.parent.winfo_rootx()
+        y = (480-410)//2 + self.parent.winfo_rooty()
         
         self.geometry("450x460+"+str(x)+"+"+str(y)) # Place it in the centre of the root window
 
@@ -204,7 +204,7 @@ class PreferencesPopupBox(tkSimpleDialog.Dialog):
 
     def checkcubman(self, event=None): # Checks for existence of cubman at specificed location
         if not os.path.isfile(self.cubman.get()):
-            tkMessageBox.showerror(title="No such file",
+            messagebox.showerror(title="No such file",
                                    message='''
 There isn't any file with this name.
                                    
@@ -215,7 +215,7 @@ For example (in Windows): C:\\Program Files\\Gaussian\\cubman.exe'''
             
     def checkformchk(self, event=None): # Checks for existence of formchk at specificed location
         if not os.path.isfile(self.formchk.get()):
-            tkMessageBox.showerror(title="No such file",
+            messagebox.showerror(title="No such file",
                                    message='''
 There isn't any file with this name.
                                    
@@ -226,7 +226,7 @@ For example (in Windows): C:\\Program Files\\Gaussian\\formchk.exe'''
 
     def checkcubegen(self, event=None): # Checks for existence of formchk at specificed location
         if not os.path.isfile(self.cubegen.get()):
-            tkMessageBox.showerror(title="No such file",
+            messagebox.showerror(title="No such file",
                                    message='''
 There isn't any file with this name.
                                    
@@ -251,7 +251,7 @@ For example (in Windows): C:\\Program Files\\Gaussian\\cubegen.exe'''
             g.function3d("exp(-x*x-y*y)","notitle")
             DisplayPlot(self.parent,g,"You should see the GaussSum logo below...drawn by Gnuplot")
         else:
-            tkMessageBox.showerror(title="No such file",
+            messagebox.showerror(title="No such file",
                                    message='''
 There isn't any file with this name.
                                    

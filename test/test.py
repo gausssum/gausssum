@@ -3,14 +3,14 @@ import sys
 import nose
 import math
 import shutil
-import Tkinter
+import tkinter
 import collections
 
 gausssumdir = os.path.join("..")
 sys.path.append(os.path.join(gausssumdir, "src"))
 version = open(os.path.join(gausssumdir, "version.txt")).read().rstrip()
 ver = ".".join(version.split(".")[:2])
-root = Tkinter.Tk()
+root = tkinter.Tk()
 
 from gausssum.electrontrans import ET
 from gausssum.popanalysis import Popanalysis
@@ -44,7 +44,7 @@ def helptestTDDFT(filename, result):
     clearoutput(filename)
     data = parse(filename)
 
-    root = Tkinter.Tk()
+    root = tkinter.Tk()
 
     ET(None, sys.stdout, data, filename, 200, 500, 500, 3000, True,
        None, False)
@@ -63,7 +63,7 @@ def test_ECCD():
     ET(None, sys.stdout, data, filename, 100, 300, 10000, Sigma, False,
        None, False)
 
-    spectrum = [map(float, x.split()[:3]) for x in open(os.path.join(gaussdir(filename), "CDSpectrum.txt")) if not x[0]=="E"]
+    spectrum = [list(map(float, x.split()[:3])) for x in open(os.path.join(gaussdir(filename), "CDSpectrum.txt")) if not x[0]=="E"]
 
     # Assert Peak Max
     maxval = max([x[2] for x in spectrum])
@@ -159,7 +159,7 @@ def test_MO_contribs():
         assert os.path.isfile(os.path.join("exampleTDDFT", "gausssum%s" % ver, "orbital_data.txt"))
         with open(os.path.join("exampleTDDFT", "gausssum%s" % ver, "orbital_data.txt")) as f:
             while True:
-                line = f.next()
+                line = next(f)
                 if line.find("L+") >= 0: break
             assert line.rstrip() == "\t".join(mos)
 
@@ -170,10 +170,12 @@ def test_MO_contribs():
         assert os.path.isfile(os.path.join("exampleTDDFT", "gausssum%s" % ver, "orbital_data.txt"))
         with open(os.path.join("exampleTDDFT", "gausssum%s" % ver, "orbital_data.txt")) as f:
             while True:
-                line = f.next()
+                line = next(f)
                 if line.find("L+") >= 0: break
             line = line.rstrip().split()
             assert line[0:4] == mos[:4]
+            print(line[4:6])
+            print(mocontribs[:2])
             assert line[4:6] == mocontribs[:2]
             if unres:
                 assert line[8:12] == mos[4:]
@@ -187,17 +189,17 @@ def test_MO_contribs():
         assert os.path.isfile(os.path.join("exampleTDDFT", "gausssum%s" % ver, "UVData.txt"))
         with open(os.path.join("exampleTDDFT", "gausssum%s" % ver, "UVData.txt")) as f:
             while True:
-                line = f.next()
+                line = next(f)
                 if line.find("Wavelength") >= 0:
                     break
-            line = f.next().rstrip().split("\t")
+            line = next(f).rstrip().split("\t")
             assert line[5] == excitations
             assert line[7:9] == change
 
 def test_groups():
         filename = os.path.join("exampleTDDFT", "benzene_pop.out")
         data = parse(filename)
-        ans = {"First":range(0, 20), "Second":range(20, 66)}
+        ans = {"First":list(range(0, 20)), "Second": list(range(20, 66))}
         
         examples = [["atoms", "First", "1-3", "Second", "4-12"],
                     ["atoms", "  First", "1-3", "Second", "   4-12"],
@@ -208,10 +210,10 @@ def test_groups():
             with open(filename, "w") as f:
                 f.write("\n".join(example))
             groups = Groups(filename, data.atomnos, data.aonames, data.atombasis)
-            
+
             assert groups.groups == ans
-            
-        
+
+
 
 if __name__ == "__main__":
 

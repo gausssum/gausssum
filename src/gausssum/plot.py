@@ -20,14 +20,14 @@
 import os
 import time
 import shutil
-import tkFileDialog
-import tkMessageBox     # For the Error Dialog
+import tkinter.filedialog
+import tkinter.messagebox     # For the Error Dialog
 from tempfile import mkstemp
 
-from Tkinter import *
+from tkinter import *
 from PIL import Image # Python Imaging Library
 from PIL import ImageTk      # Python Imaging Library
-from gnupy import Gnuplot
+from .gnupy import Gnuplot
 
 # Kludge necessary for using PIL when using py2exe
 # (see http://www.py2exe.org/index.cgi/PIL_and_py2exe)
@@ -41,7 +41,7 @@ class DisplayPlot(object):
 
         status = g.plot(self.filename)
         if status==1: # i.e. gnuplot executable not present
-            tkMessageBox.showerror(
+            messagebox.showerror(
                 title = "Check the path to Gnuplot in Settings",
                 message = "No plot was created as the Gnuplot executable cannot be found.\n"
                           "Go to 'File'/'Settings' and set the correct path."
@@ -68,14 +68,14 @@ class DisplayPlot(object):
         try:
             image = Image.open(self.filename)
             self.graph = ImageTk.PhotoImage(image)
-            
+
             self.item2 = self.canvas2.create_image(7,7,anchor=NW,image=self.graph)
             Label(self.frame1,text="").pack(side=TOP)
 
         except IOError:
             # This happens anytime that gnuplot doesn't create a graph
             # (for some reason...e.g. bad input)
-            tkMessageBox.showerror(title="The script is complaining...",
+            messagebox.showerror(title="The script is complaining...",
                                    message="No graph has been created. This may be due \
 to a problem with your gnuplot installation or with your \
 input file. Contact the author if you think GaussSum is the problem.")
@@ -83,7 +83,7 @@ input file. Contact the author if you think GaussSum is the problem.")
             return
         else:
             # Only put the save button there if there's something to save
-            Button(frame2,text="Save As",underline=0,command=self.save).pack(side=LEFT)         
+            Button(frame2,text="Save As",underline=0,command=self.save).pack(side=LEFT)
             self.popup.bind("<Alt-s>",self.save)
 
         Button(frame2,text="Close",underline=0,command=self.close).pack(side=LEFT)
@@ -105,7 +105,7 @@ input file. Contact the author if you think GaussSum is the problem.")
         self.popup.destroy()
 
     def save(self,event=None):
-        filename=tkFileDialog.asksaveasfilename(filetypes=[("PeNGuin",".png")],
+        filename = filedialog.asksaveasfilename(filetypes=[("PeNGuin",".png")],
                                                 parent=self.popup,
                                                 defaultextension=".png"
                                                 )

@@ -12,24 +12,16 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 
-from Tkinter import *   # GUI stuff
-import tkMessageBox     # For the About Dialog
-import tkFileDialog     # For the Open File and Save File
-import webbrowser
-import tkSimpleDialog
-import traceback
-import copy             # For deepcopy...until I find a better way of doing this
-import ConfigParser     # For writing the settings to an .ini file
+from tkinter import *
+import configparser     # For writing the settings to an .ini file
 
 from gausssum.cclib.parser.utils import PeriodicTable
-# from cclib.parser.utils import PeriodicTable
 
 import numpy
 
 import os
 import sys
 import math
-import string
 
 
 # This class allows Find.py, etc. to write directly to the 'console screen'
@@ -58,21 +50,21 @@ def readinconfigfile(inifile):
     # Windows-style .ini file, and returns a
     # dictionary of settings.
     #
-    # Uses the Python module ConfigParser for the complicated stuff.
-    cp=ConfigParser.ConfigParser()
+    # Uses the Python module configparser for the complicated stuff.
+    cp = configparser.ConfigParser(interpolation=None)
     cp.read(inifile)
     config={}
     for sec in cp.sections():
-        name=string.lower(sec)
+        name = sec.lower()
         for opt in cp.options(sec):
-            config[name+"."+string.lower(opt)]=string.strip(cp.get(sec,opt))
+            config[name+"."+opt.lower()] = cp.get(sec,opt).strip()
 
     return config
-            
+
 def writeoutconfigfile(config,inifile):
     # The companion to readinconfigile
     # Written by me!
-    cp=ConfigParser.ConfigParser()
+    cp = configparser.ConfigParser()
 
     for key,value in config.items():
         sec=key.split('.')[0]
@@ -122,7 +114,7 @@ class NMRstandards(object):
         lines = []
         for adict in self.nmrdata:
             output = [adict['theory'],adict['name']]
-            for k,v in adict.iteritems():
+            for k,v in adict.items():
                 if k not in ["theory","name"]:
                     output.append(k)
                     output.append(str(v))
@@ -286,15 +278,15 @@ class Groups(object):
              2,3,7
         """
         inputfile = open(filename,"r")
-        grouptype = inputfile.next().strip()
+        grouptype = next(inputfile).strip()
         while not grouptype: # Ignore blank lines
-            grouptype = inputfile.next().strip()
+            grouptype = next(inputfile).strip()
         groups = {}
         for line in inputfile:
             if not line.strip(): continue # Ignore blank lines
             groupname = line.strip()
             atoms = []
-            line = inputfile.next()
+            line = next(inputfile)
             parts = line.split(",")
             for x in parts:
                 temp = x.split("-")
@@ -314,7 +306,7 @@ class Groups(object):
         d = {}
         names = []
         for atomno in self.atomnos:
-            if d.has_key(atomno):
+            if atomno in d:
                 d[atomno] += 1
             else:
                 d[atomno] = 1
@@ -327,14 +319,14 @@ class Groups(object):
         for atomname, ab in zip(self.atomnames, self.atombasis):
             names.extend([atomname + "_" + x for x in range(len(ab))])
         self.aonames = names
-        
+
     def __str__(self):
         """Return a string representation of this object."""
         ans = []
-        for k,v in self.groups.iteritems():
+        for k,v in self.groups.items():
             ans.append("%s: %s" % (k,",".join(map(str,v))))
         return "\n".join(ans)
-            
+
     def _setup(self):
         """Create the groups attribute."""
         type = self.grouptype.lower()
@@ -347,22 +339,22 @@ class Groups(object):
             elif type=="allatoms":
                 self.groups = dict(zip(self.atomnames, self.atombasis))
             else:
-                raise TypeError,"You need to specify groups"
+                raise TypeError("You need to specify groups")
         else:
             if type=="orbitals":
                 self.groups = {}
-                for k,v in self.filegroups.iteritems():
+                for k,v in self.filegroups.items():
                     # Convert the indices to start from 0
                     self.groups[k] = [x-1 for x in v]
             elif type=="atoms":
                 self.groups = {}
-                for k,v in self.filegroups.iteritems():
+                for k,v in self.filegroups.items():
                     self.groups[k] = []
                     for x in v:
                         # Convert the indices to start from 0
                         self.groups[k].extend(self.atombasis[x - 1])
             else:
-                raise TypeError,"%s is not a valid type of group" % type
+                raise TypeError("%s is not a valid type of group" % type)
 
 
     def verify(self,purpose):
@@ -373,11 +365,13 @@ class Groups(object):
         status = ""
         
         # Create one big list of all of the atom orbitals in the groups
-        all = reduce(lambda a,b:a+b, self.groups.values())
+        all = []
+        for x in self.groups.values():
+            all += x
         all.sort()
         
         if purpose=="DOS": # Each atom orb must appear exactly once
-            ok = (all==range(len(self.aonames)))
+            ok = (all==list(range(len(self.aonames))))
             if not ok:
                 status = "Problem with Groups.txt!\n(1)Every atom/orbital must " \
                           "be listed as a member of some group\n(2)No "   \
