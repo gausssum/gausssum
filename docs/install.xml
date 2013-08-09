@@ -31,11 +31,11 @@
 				</para>
 			</sect2>
 			<sect2 id="WinPIL" xreflabel="Installing PIL">
-				<title>Install the Python Imaging Library (PIL)</title>
+				<title>Install Pillow</title>
 				<para>
-					In order to create .png images, &gs; requires the Python Imaging Library, which is a Python package that allows image manipulation.</para> 
+					In order to create .png images, &gs; requires Pillow, which is a Python package that allows image manipulation.</para> 
 				<para>
-					Go to the <ulink url="http://www.pythonware.com/products/pil/#pil117">PIL download page</ulink>. Download the run the Windows installer for your version of Python.
+					Go to the <ulink url="https://pypi.python.org/pypi/Pillow/2.1.0">Pillow download page</ulink>. Download the Windows installer for your version of Python.
 				</para>
 			</sect2>
 
@@ -90,7 +90,7 @@
 			</sect2>
 			<sect2>
 				<title>Install Pillow</title>
-				<para>The Python Imaging Library is a Python package that allows manipulation of images. &gs; requires PIL to handle PNG images. You can get PIL 1.1.7 from <ulink url="http://www.pythonware.com/products/pil/#pil117">here</ulink> under "Python Imaging Library 1.1.7 Source Kit (all platforms)". This should be untarred into a folder in the usual way, using '<command>tar zxvf Imaging-1.1.7.tar.gz</command>'. Next, go into the folder created and (as root) install the package as follows: '<command>python setup.py install</command>'.</para>
+				<para>Pillow is a Python package that allows manipulation of images. &gs; requires Pillow to handle PNG images. You can get Pillow 2.1.0 from <ulink url="http://www.pythonware.com/products/pil/#pil117">here</ulink> under "Python Imaging Library 1.1.7 Source Kit (all platforms)". This should be untarred into a folder in the usual way, using '<command>tar zxvf Imaging-1.1.7.tar.gz</command>'. Next, go into the folder created and (as root) install the package as follows: '<command>python setup.py install</command>'.</para>
 				<para>If you are using Debian Linux, the Python Imaging Library will be downloaded and installed if you issue the following command as root: '<command>apt-get install python-imaging python-imaging-tk</command>'.</para>
 			</sect2>
 			<sect2>
