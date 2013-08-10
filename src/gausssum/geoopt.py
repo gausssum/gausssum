@@ -1,6 +1,6 @@
 #
 # GaussSum (http://gausssum.sf.net)
-# Copyright (C) 2006-2009 Noel O'Boyle <baoilleach@gmail.com>
+# Copyright (C) 2006-2013 Noel O'Boyle <baoilleach@gmail.com>
 #
 # This program is free software; you can redistribute and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -17,11 +17,10 @@ import sys
 import math
 
 # from Tkinter import *
-from .plot import DisplayPlot
-from .gnupy import Gnuplot
-from tempfile import mkstemp
+from .plotnew import DisplayPlot
+from .mpl import MPLPlot
 
-def GeoOpt(root,screen,logfile,numpts,gnuplotexec):
+def GeoOpt(root, screen, logfile, numpts, gnuplotexec):
 
     screen.write("Starting GeoOpt.py\n")
 
@@ -29,34 +28,31 @@ def GeoOpt(root,screen,logfile,numpts,gnuplotexec):
     for i in range(len(logfile.geovalues)):
         dev = 0
         for j in range(len(logfile.geotargets)):
-            if abs(logfile.geovalues[i][j])>logfile.geotargets[j]:
-                dev += math.log(abs(logfile.geovalues[i][j])/logfile.geotargets[j])
+            if abs(logfile.geovalues[i][j]) > logfile.geotargets[j]:
+                dev += math.log(abs(logfile.geovalues[i][j]) / logfile.geotargets[j])
         deviation.append(dev)
 
+    if len(logfile.scfenergies) >= numpts+2: # If there are two points to plot
 
-    if len(logfile.scfenergies)>=numpts+2: # If there are two points to plot
-        
-        g = Gnuplot(gnuplotexec)
-        g.commands("set xlabel 'Optimisation Step'")
-        g.commands("set ylabel 'Energy'")
-        data = list(zip(range(len(logfile.scfenergies)-numpts),logfile.scfenergies[numpts:]))
-        g.data(data,"notitle with lines")
-        g.data(data,"notitle")
+        g = MPLPlot()
+        g.setlabels("Optimisation Step", "Energy")
+        data = list(zip(range(len(logfile.scfenergies)-numpts), logfile.scfenergies[numpts:]))
+        g.data(data, "notitle with lines")
+        g.data(data, "notitle")
 
-        DisplayPlot(root,g,"Geometry optimisation")
+        DisplayPlot(root, g, "Geometry optimisation")
 
-        if len(deviation)>=numpts+2:
+        if len(deviation) >= numpts+2:
 
-            h = Gnuplot(gnuplotexec)
-            h.commands("set yrange [0:]")
-            h.commands("set xlabel 'Optimisation Step'")
-            h.commands("set ylabel 'Deviation from targets'")
-            data = list(zip(range(len(deviation)-numpts),deviation[numpts:]))
-            h.data(data,"notitle with lines")
-            h.data(data,"notitle")
+            h = MPLPlot()
+            h.setlabels("Optimisation Step", "Deviation from targets")
+            data = list(zip(range(len(deviation)-numpts), deviation[numpts:]))
+            h.data(data, "notitle with lines")
+            h.data(data, "notitle")
+            h.subplot.set_ylim(bottom=0)
 
-            DisplayPlot(root,h,"Deviation from targets")
-            
+            DisplayPlot(root, h, "Deviation from targets")
+
     else:
         screen.write("I need at least two points to plot\n")
 
