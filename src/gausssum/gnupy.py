@@ -84,7 +84,7 @@ class Gnuplot(object):
                               'set output "%s"' % self._fixname(filename)])
 	# To create the examples uncomment the following:
 	# self.settings.extend(['set size 0.75,0.75'])
-                              
+
         filedes, filename = mkstemp()
 
         output = open(filename,"w")
@@ -95,7 +95,7 @@ class Gnuplot(object):
         elif self.splotcommand:
             output.write('splot %s \n' % ",".join(self.splotcommand))
         output.close()
-        
+
         # Double quotation marks needed here, esp. for Windows where there
         # may be spaces in the path to gnuplotexec
         status = 0

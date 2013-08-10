@@ -1,6 +1,6 @@
 #
 # GaussSum (http://gausssum.sf.net)
-# Copyright (C) 2006-2009 Noel O'Boyle <baoilleach@gmail.com>
+# Copyright (C) 2006-2013 Noel O'Boyle <baoilleach@gmail.com>
 #
 # This program is free software; you can redistribute and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -16,15 +16,13 @@ import os
 import sys
 import math
 
-from .plot import DisplayPlot
-from .gnupy import Gnuplot
-from tempfile import mkstemp
-# from Tkinter import *
+from .plotnew import DisplayPlot
+from .mpl import MPLPlot
 
 def SCF(root,screen,logfile,numpoints,gnuplotexec):
-    
+
     screen.write("Starting to analyse the progress of the SCF\n")
-    
+
     scfvalues = logfile.scfvalues[-1] # The most recent in the logfile
     scftargets = logfile.scftargets[-1] # Ditto
 
@@ -35,16 +33,15 @@ def SCF(root,screen,logfile,numpoints,gnuplotexec):
             if abs(scfvalues[i][j]) > scftargets[j]:
                 dev += math.log(abs(scfvalues[i][j]) / scftargets[j])
         deviation.append(dev)
-    
+
     if len(deviation)>=numpoints+2: # If there are two points to plot
 
-        h = Gnuplot(gnuplotexec)
-        h.commands("set yrange [0:*]")
-        h.commands("set xlabel 'SCF convergence step'")
-        h.commands("set ylabel 'Deviation from targets'")
+        h = MPLPlot()
+        h.setlabels("SCF convergence step", "Deviation from targets")
         data = list(zip(range(len(deviation)-numpoints),deviation[numpoints:]))
         h.data(data,"notitle with lines")
         h.data(data,"notitle")
+        h.subplot.set_ylim(bottom=0)
 
         DisplayPlot(root,h,"Plot of SCF deviation vs Iteration")
     else:
