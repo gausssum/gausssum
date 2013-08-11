@@ -397,24 +397,22 @@ class App:    # This sets up the GUI
             if s=="SCF":
                 if self.reparse.get():
                     self.data = self.logfile.parse()
-                worked = SCF(self.root,self.screen,self.data,int(self.numpts.get()),self.settings['global settings.gnuplot'])
+                worked = SCF(self.root,self.screen,self.data,int(self.numpts.get()))
             elif s=="GEOOPT":
                 if self.reparse.get():
                     self.data = self.logfile.parse()
-                worked = GeoOpt(self.root,self.screen,self.data,int(self.numpts.get()),self.settings['global settings.gnuplot'])
+                worked = GeoOpt(self.root,self.screen,self.data,int(self.numpts.get()))
             elif s=="IR_RAMAN":
-                worked = Vibfreq(self.root,self.screen,self.data,self.logfile.filename,int(self.start.get()),int(self.end.get()),int(self.numpts.get()),float(self.FWHM.get()),self.scale.get(),float(self.scalefactor.get()),float(self.excitation.get()),float(self.temperature.get()),self.settings['global settings.gnuplot'])
+                worked = Vibfreq(self.root,self.screen,self.data,self.logfile.filename,int(self.start.get()),int(self.end.get()),int(self.numpts.get()),float(self.FWHM.get()),self.scale.get(),float(self.scalefactor.get()),float(self.excitation.get()),float(self.temperature.get()))
             elif s=="FIND":
                 if self.searchrad.get()=="Custom":
                     worked = Search(self.screen,self.logfile.filename,self.customsearch.get(),self.casesensitive.get())
                 else:
                     worked = Search(self.screen,self.logfile.filename,self.searchrad.get(),1)
             elif s=="MO":
-                worked = Popanalysis(self.root,self.screen,self.data,self.logfile.filename,float(self.start.get()),float(self.end.get()),self.MOplot.get(),float(self.FWHM.get()),self.makeorigin.get(),self.settings['global settings.gnuplot'])
+                worked = Popanalysis(self.root,self.screen,self.data,self.logfile.filename,float(self.start.get()),float(self.end.get()),self.MOplot.get(),float(self.FWHM.get()),self.makeorigin.get())
             elif s=="UVVIS":
-                worked = ET(self.root,self.screen,self.data,self.logfile.filename,int(self.start.get()),int(self.end.get()),int(self.numpts.get()),float(self.FWHM.get()),self.UVplot.get(),self.settings['global settings.gnuplot'], self.eddm.get())
-##            elif s=="EDDM":
-##                worked=GaussSum.EDDM.EDDM(self.screen,self.logfile,self.trans.get(),self.settings['eddm.cubman'],self.settings['eddm.formchk'],self.settings['eddm.cubegen'])
+                worked = ET(self.root,self.screen,self.data,self.logfile.filename,int(self.start.get()),int(self.end.get()),int(self.numpts.get()),float(self.FWHM.get()),self.UVplot.get(),self.eddm.get())
 ##            elif s=="NMR":
 ##                listboxvalue=self.nmrlbx1.curselection()
 ##                try: # Works for both list of strings and list of ints (see Tkinter documentation for details)
@@ -572,12 +570,7 @@ class App:    # This sets up the GUI
         # The default settings are overwritten by any existing stored
         # settings.
 
-        defaultgnuplot = os.path.join(installlocation,"gnuplot460","bin","wgnuplot.exe")
-        if not sys.platform == "win32":
-            defaultgnuplot = os.path.join(os.sep, "usr", "bin", "gnuplot")
-
         self.settings = {
-                           'global settings.gnuplot': defaultgnuplot,
                            'find.text1':'SCF Done',
                            'find.text2':'k 501%k502',
                            'find.text3':'imaginary',
@@ -611,6 +604,6 @@ class App:    # This sets up the GUI
             self.saveprefs() # Save the inital settings file
 
     def webdocs(self):
-        webbrowser.open(os.path.join(installlocation,"..","Docs","index.html"))
+        webbrowser.open(os.path.join(installlocation, "..", "Docs", "index.html"))
 
 

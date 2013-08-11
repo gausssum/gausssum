@@ -1,6 +1,6 @@
 #
 # GaussSum (http://gausssum.sf.net)
-# Copyright (C) 2006-2009 Noel O'Boyle <baoilleach@gmail.com>
+# Copyright (C) 2006-2013 Noel O'Boyle <baoilleach@gmail.com>
 #
 # This program is free software; you can redistribute and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -42,7 +42,6 @@ class Redirect:
             self.args[1].see(END) # scroll if necessary to see last text inserted
     def flush(self):
         pass
-        
 
 def readinconfigfile(inifile):
     # Taken from the Python Cookbook (O'Reilly):
@@ -64,7 +63,7 @@ def readinconfigfile(inifile):
 def writeoutconfigfile(config,inifile):
     # The companion to readinconfigile
     # Written by me!
-    cp = configparser.ConfigParser()
+    cp = configparser.ConfigParser(interpolation=None)
 
     for key,value in config.items():
         sec=key.split('.')[0]
@@ -134,7 +133,7 @@ class ErrorCatcher:
 
 def percent(number):
     return str(int(round(number*100))) # round leaves .0 at the end of a number
-    
+
 def levelname(i,HOMO):
     if i<HOMO:
         level='H-'+str(HOMO-i)
@@ -223,15 +222,15 @@ class GaussianSpectrum(object):
         A = -2.7726/self.width**2
         for x in self.xvalues:
             tot = [0]*len(self.heights) # The total for each spectrum for this x value
-            
+
             for peakno in range(len(self.peaks)): # For each peak
                 pos = self.peaks[peakno]
                 exponent = math.exp(A*(pos-x)**2)
                 for spectrumno in range(len(heights)):
                     tot[spectrumno] += heights[spectrumno][peakno]*exponent
-                    
+
             data.append(tot)
-            
+
         self.spectrum = numpy.swapaxes(numpy.array(data),0,1)
 
 class Groups(object):
@@ -255,7 +254,7 @@ class Groups(object):
         self.atomnos = atomnos
         self.aonames = aonames
         self.atombasis = atombasis
-        
+
         self._makeatomnames()
         if not self.aonames:
             self._makeaonames()
@@ -363,13 +362,13 @@ class Groups(object):
         purpose is one of "DOS" or "COOP"
         """
         status = ""
-        
+
         # Create one big list of all of the atom orbitals in the groups
         all = []
         for x in self.groups.values():
             all += x
         all.sort()
-        
+
         if purpose=="DOS": # Each atom orb must appear exactly once
             ok = (all==list(range(len(self.aonames))))
             if not ok:

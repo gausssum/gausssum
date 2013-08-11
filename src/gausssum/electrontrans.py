@@ -1,6 +1,6 @@
 #
 # GaussSum (http://gausssum.sf.net)
-# Copyright (C) 2006-2009 Noel O'Boyle <baoilleach@gmail.com>
+# Copyright (C) 2006-2013 Noel O'Boyle <baoilleach@gmail.com>
 #
 # This program is free software; you can redistribute and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -23,7 +23,7 @@ from gausssum.utils import GaussianSpectrum, levelname, percent
 from gausssum.cclib.parser.utils import convertor
 
 # from Tkinter import *
-from .gnupy import Gnuplot
+from .mpl import MPLPlot
 from .plot import DisplayPlot
 from .folder import folder
 
@@ -37,7 +37,7 @@ def createEDDM(screen, logfile, contrib, gaussdir, unres):
         elif cmds[0] == "sq":
             output.write("echo Squaring %s\n" % cmds[1])
         elif cmds[0] == "su":
-            output.write("echo Subtracting %s from %s\n" % (cmds[1], cmds[3]))        
+            output.write("echo Subtracting %s from %s\n" % (cmds[1], cmds[3]))
         lines = []
         lines.append("echo %s > tmp.txt" % cmds[0])
         for cmd in cmds[1:]:
@@ -121,7 +121,7 @@ def createEDDM(screen, logfile, contrib, gaussdir, unres):
     screen.write("Creating the EDDM script file for %s\n" % fchkpoint)
 
     if windows:
-        output = open(os.path.join(gaussdir, "eddm.bat"), "w")        
+        output = open(os.path.join(gaussdir, "eddm.bat"), "w")
         output.write("@echo off\n")
     else:
         finalsection = []
@@ -135,7 +135,7 @@ def createEDDM(screen, logfile, contrib, gaussdir, unres):
             output.write("""if "%%1" == "%d" goto :tran%d\n""" % (i+1, i+1))
         else:
             finalsection.append("""if [ "$1" == "%d" ]\nthen\n  tran%d\nfi\n""" % (i+1, i+1))
-    line = "echo You need to specify a transition in the range 1 to %d\n" % len(logfile.etenergies)    
+    line = "echo You need to specify a transition in the range 1 to %d\n" % len(logfile.etenergies)
     if windows:
         output.write("%s\ngoto :end\n" % line)
     else:
@@ -146,7 +146,7 @@ def createEDDM(screen, logfile, contrib, gaussdir, unres):
             output.write(":tran%d\n" % (i+1))
         else:
             output.write("function tran%d\n{\n" % (i+1))
-            
+
         totalcon = sum(contrib[i])
         scales = [x / float(totalcon) for x in contrib[i]]
         minimum_scale = 0 # Don't include contributions that don't contribute!
@@ -160,7 +160,7 @@ def createEDDM(screen, logfile, contrib, gaussdir, unres):
                         createcubes(sec[M])
                         createsquares(sec[M])
                         alreadydone.add(sec[M])
-                        
+
         N = 0 # Find the first transition with non-zero scale
         while N < len(scales) and scales[N] <= minimum_scale:
             N += 1
@@ -168,11 +168,11 @@ def createEDDM(screen, logfile, contrib, gaussdir, unres):
             scale = scales[N]
             cubman(["sc","sq%s.cub" % getmo(logfile.etsecs[i][N][0]),"y","before.cub","y",str(scale)])
             cubman(["sc","sq%s.cub" % getmo(logfile.etsecs[i][N][1]),"y","after.cub","y",str(scale)])
-            created_tmp = False    
+            created_tmp = False
             for j in range(N + 1, len(logfile.etsecs[i])):
                 scale = scales[j]
                 if scale > minimum_scale:
-                    created_tmp = True                    
+                    created_tmp = True
                     cubman(["sc","sq%s.cub" % getmo(logfile.etsecs[i][j][0]),"y","tmp.cub","y",str(scale)])
                     cubman(["a","tmp.cub","y","before.cub","y","tmp2.cub","y"])
                     output.write("%s tmp2.cub before.cub\n" % syscmd[MOVE])
@@ -195,7 +195,7 @@ def createEDDM(screen, logfile, contrib, gaussdir, unres):
     else:
         output.write("\n".join(finalsection))
     output.close()
-            
+
 def readorbital_data(inputfile):
     # Reads in all data from orbital_data.txt
 
@@ -221,7 +221,7 @@ def readorbital_data(inputfile):
         contrib = numpy.zeros((1,NBasis,NGroups), "d")
     else:
         contrib = numpy.zeros((2,NBasis,NGroups), "d")
-    
+
     evalues=[]
     for i in range(NBasis-1,-1,-1):
         line=inputfile.readline().split()
@@ -241,8 +241,8 @@ def readorbital_data(inputfile):
 
 
 def ET(root,screen,logfile,logfilename,
-       start,end,numpts,FWHM,UVplot
-       ,gnuplotexec, EDDM): 
+       start,end,numpts,FWHM,UVplot,
+       EDDM):
 
     screen.write("Starting to analyse the electronic transitions\n")
 
@@ -266,9 +266,9 @@ def ET(root,screen,logfile,logfilename,
             screen.write("orbital_data.txt not found\n")
         else:
             thisHOMO,NBasis,NGroups,groupname,groupatoms,contrib,evalue=readorbital_data(inputfile)
-            inputfile.close()             
+            inputfile.close()
 
-            orbdata=True        
+            orbdata=True
             screen.write("Using orbital_data.txt\n")
             if thisHOMO != list(logfile.homos):
                 screen.write("Disagreement on HOMO...orbital_data.txt says "+str(thisHOMO)+"\n"+logfile.filename+" says "+str(logfile.homos)+"\n")
@@ -298,19 +298,19 @@ def ET(root,screen,logfile,logfilename,
                     alphabeta = [["(A)", "(B)"][thisCIS[0][1]], ["(A)", "(B)"][thisCIS[1][1]]]
                 CIStext = "%s%s->%s%s (%d%%)" % (levelname(thisCIS[0][0], logfile.homos[thisCIS[0][1]]), alphabeta[0],
                                                    levelname(thisCIS[1][0], logfile.homos[thisCIS[1][1]]), alphabeta[1],
-                                                   percontrib)                    
+                                                   percontrib)
                 if percontrib >= 10: # Major contributions (>=10%)
                     majorCIS[i].append(CIStext)
                 elif percontrib >= 2: #Minor contributions (>=2%)
                     minorCIS[i].append(CIStext)
                 allpercent[i].append(percontrib)
-                    
+
             if orbdata:
                 for j in range(len(groupname)): # The charge densities are scaled so that they add to one
                     CD[j][0]=CD[j][0]/totcontribs
                     CD[j][1]=CD[j][1]/totcontribs
                     screenCD[i]=screenCD[i]+percent(CD[j][0])+"-->"+percent(CD[j][1])+" ("+percent(round(CD[j][1],2)-round(CD[j][0],2))+")\t"
-                                                                                    
+
         if EDDM:
             createEDDM(screen, logfile, allpercent, gaussdir, unres)
 
@@ -341,7 +341,7 @@ def ET(root,screen,logfile,logfilename,
         startwaveno = convertor(end,"nm","cm-1")
         t = GaussianSpectrum(startwaveno,endwaveno,numpts,
                              ( logfile.etenergies,[[x*2.174e8/FWHM for x in logfile.etoscs]] ),
-                             FWHM)                           
+                             FWHM)
         screen.write("Writing the spectrum to UVSpectrum.txt\n")
         outputfile=open(os.path.join(gaussdir,"UVSpectrum.txt"),"w")
         outputfile.write("Energy (cm-1)\tWavelength (nm)\tAbs\t<--UV Spectrum\tUV-Vis transitions-->\tEnergy (cm-1)\tWavelength (nm)\tOsc. strength\n")
@@ -356,26 +356,20 @@ def ET(root,screen,logfile,logfilename,
         outputfile.close()
 
         if root:
-            # Plot the UV Spectrum using Gnuplot
-
-            screen.write("Plotting using Gnuplot\n")
-
-            if max(t.spectrum[0,:])<1E-8: # Gnuplot won't draw it if the spectrum is flat
+            if max(t.spectrum[0,:])<1E-8: # Don't draw it if the spectrum is flat
                 screen.write("There are no peaks in this wavelength range!\n")
             else:
-                g = Gnuplot(gnuplotexec)
-                g.commands("set ytics nomirror",
-                           "set y2tics",
-                           "set y2label 'Oscillator strength'",
-                           "set xlabel 'Wavelength (nm)'",
-                           "set ylabel 'epsilon'",
-                           "set xrange [%d:%d]" % (start,end) )
+                g = MPLPlot()
                 xvalues_nm = [convertor(x,"cm-1","nm") for x in t.xvalues]
-                g.data(zip(xvalues_nm,t.spectrum[0,:]),"notitle with lines")
+                g.setlabels("Wavelength (nm)", r"$\epsilon$")
+                g.data(zip(xvalues_nm,t.spectrum[0,:]))
                 energies_nm = [convertor(x,"cm-1","nm") for x in logfile.etenergies]
-                g.data(zip(energies_nm,logfile.etoscs),"axes x1y2 notitle with impulses")
+                oscdata = [(x, y) for x, y in zip(energies_nm, logfile.etoscs) if start < x < end]
+                g.data(oscdata, vlines=True, y2axis="Oscillator strength")
 
-                DisplayPlot(root,g,"UV-Vis Spectrum")
+                g.subplot.set_xlim(left=start, right=end)
+                g.secondaxis.set_ylim(bottom=0)
+                DisplayPlot(root, g, "UV-Vis Spectrum")
 
     else:
 #######################################################
@@ -393,7 +387,7 @@ def ET(root,screen,logfile,logfilename,
         # This uses Delta, the half width at 1/e height.
         # We use Sigma, the full width at 1/e height.
         #   Delta = Sigma / 2
-  
+
         endwaveno = convertor(start,"nm","cm-1")
         startwaveno = convertor(end,"nm","cm-1")
         sigma = convertor(FWHM, "eV", "cm-1")
@@ -408,23 +402,7 @@ def ET(root,screen,logfile,logfilename,
         real_FWHM = math.sqrt(math.log(2)) * sigma
         t = GaussianSpectrum(startwaveno,endwaveno,numpts,
                              ( logfile.etenergies,[peakmax] ),
-                             real_FWHM)   
-
-##        spectrum=[]
-##        for x in range(numpts): # Spectrum from 10000 (1000nm) to 50000 cm-1 (200nm)
-##            spectrum.append(0)
-##        
-##        width=end-start
-##        sigma=FWHM*8065.6 # Conversion from eV to 1/cm
-##        for x in range(len(rotatory)):
-##            for y in range(numpts): # the index in the array
-##                realy=width*y/numpts+start # the wavelength
-##                realy=1.0e7/realy # the energy in wavenumber
-##                prefactor = 1.0 / math.sqrt(2 * math.pi * sigma)
-##                exponent= math.exp(-((realy-energy_wavenum[x])/(2*sigma) )**2)
-##                # Equation taken (with slight amendment in exponent) from JPCA, 2003, 107, 2526.
-##                z=(1/2.297e-39) * prefactor * energy_wavenum[x] * rotatory[x] * 1e-40 * exponent
-##                spectrum[y]=spectrum[y]+z
+                             real_FWHM)
 
         # Write CDSpectrum.txt containing info on the CD spectrum
         screen.write("Writing the spectrum to CDSpectrum.txt\n")
@@ -451,23 +429,18 @@ def ET(root,screen,logfile,logfilename,
             if max(t.spectrum[0,:])<1E-8: # Gnuplot won't draw it if the spectrum is flat
                 screen.write("There are no peaks in this wavelength range!\n")
             else:
-                g = Gnuplot(gnuplotexec)
-                g.commands("set ytics nomirror",
-                           "set y2tics",
-                           "set y2label 'R (length) / 1e-40'",
-                           "set xlabel 'Wavelength (nm)'",
-                           "set ylabel 'epsilon'",
-                           "set xrange [%d:%d]" % (start,end) )
+                g = MPLPlot()
+                g.setlabels("Wavelength (nm)", r"$\epsilon$")
+
                 xvalues_nm = [convertor(x,"cm-1","nm") for x in t.xvalues]
-                g.data(zip(xvalues_nm,t.spectrum[0,:]),"notitle with lines")
+                g.data(zip(xvalues_nm,t.spectrum[0,:]))
                 energies_nm = [convertor(x,"cm-1","nm") for x in logfile.etenergies]
-                g.data(zip(energies_nm,logfile.etrotats),"axes x1y2 notitle with impulses")
+                oscdata = [(x, y) for x, y in zip(energies_nm, logfile.etrotats) if start < x < end]
+                g.data(oscdata, vlines=True, y2axis="R (length) / $10^{-40}$")
 
-                # line="set ytics nomirror\nset y2tics\nset y2label 'R (length) / 1e-40'\n"
-                # line=line+"set xlabel 'Wavelength (nm)'\nset ylabel 'epsilon'\nset xrange ["+str(start)+":"+str(end)+"]\n"
-                # line=line+"plot '"+os.path.join(gaussdir,"CDSpectrum.txt")+"' using 1:3 notitle with lines, '"+os.path.join(gaussdir,"CDSpectrum.txt")+"' using 4:6 axes x1y2 notitle with impulses\n"
-
-                DisplayPlot(root,g,"Circular dichroism spectrum")
+                g.subplot.set_xlim(left=start, right=end)
+                g.secondaxis.set_ylim(bottom=0)
+                DisplayPlot(root, g, "Circular dichroism spectrum")
 
     screen.write("Finished")
 

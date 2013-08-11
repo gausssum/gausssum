@@ -16,10 +16,10 @@ import os
 import sys
 import math
 
-from .plotnew import DisplayPlot
+from .plot import DisplayPlot
 from .mpl import MPLPlot
 
-def SCF(root,screen,logfile,numpoints,gnuplotexec):
+def SCF(root,screen,logfile,numpoints):
 
     screen.write("Starting to analyse the progress of the SCF\n")
 
@@ -39,8 +39,8 @@ def SCF(root,screen,logfile,numpoints,gnuplotexec):
         h = MPLPlot()
         h.setlabels("SCF convergence step", "Deviation from targets")
         data = list(zip(range(len(deviation)-numpoints),deviation[numpoints:]))
-        h.data(data,"notitle with lines")
-        h.data(data,"notitle")
+        h.data(data)
+        h.data(data, lines=False)
         h.subplot.set_ylim(bottom=0)
 
         DisplayPlot(root,h,"Plot of SCF deviation vs Iteration")

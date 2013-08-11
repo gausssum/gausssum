@@ -17,10 +17,10 @@ import sys
 import math
 
 # from Tkinter import *
-from .plotnew import DisplayPlot
+from .plot import DisplayPlot
 from .mpl import MPLPlot
 
-def GeoOpt(root, screen, logfile, numpts, gnuplotexec):
+def GeoOpt(root, screen, logfile, numpts):
 
     screen.write("Starting GeoOpt.py\n")
 
@@ -37,8 +37,8 @@ def GeoOpt(root, screen, logfile, numpts, gnuplotexec):
         g = MPLPlot()
         g.setlabels("Optimisation Step", "Energy")
         data = list(zip(range(len(logfile.scfenergies)-numpts), logfile.scfenergies[numpts:]))
-        g.data(data, "notitle with lines")
-        g.data(data, "notitle")
+        g.data(data)
+        g.data(data, lines=False)
 
         DisplayPlot(root, g, "Geometry optimisation")
 
@@ -47,8 +47,8 @@ def GeoOpt(root, screen, logfile, numpts, gnuplotexec):
             h = MPLPlot()
             h.setlabels("Optimisation Step", "Deviation from targets")
             data = list(zip(range(len(deviation)-numpts), deviation[numpts:]))
-            h.data(data, "notitle with lines")
-            h.data(data, "notitle")
+            h.data(data)
+            h.data(data, lines=False)
             h.subplot.set_ylim(bottom=0)
 
             DisplayPlot(root, h, "Deviation from targets")
