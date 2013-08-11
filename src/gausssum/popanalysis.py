@@ -1,6 +1,6 @@
 #
 # GaussSum (http://gausssum.sf.net)
-# Copyright (C) 2006-2009 Noel O'Boyle <baoilleach@gmail.com>
+# Copyright (C) 2006-2013 Noel O'Boyle <baoilleach@gmail.com>
 #
 # This program is free software; you can redistribute and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -12,28 +12,26 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 
-## Automatically adapted for numpy.oldnumeric Jun 15, 2007 by 
-
 import string
 import os
 import sys
 import numpy
 import numpy.oldnumeric as Numeric
-from math import exp,log
+from math import exp, log
 from .plot import DisplayPlot
-from .gnupy import Gnuplot
+from .mpl import MPLPlot
 from .folder import folder
 from gausssum.utils import levelname
 from gausssum.utils import GaussianSpectrum
 from gausssum.utils import Groups
 
-def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,gnuplotexec):
+def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin):
 
     def DOSconvolute(orb_MPA,evalue):
         """Convolute the DOS spectrum"""
 
         heights =[x for x in numpy.swapaxes(orb_MPA,0,1)]
-        
+
         spectrum = GaussianSpectrum(start, end, 1000,
                                     (evalue, heights),
                                     FWHM)
@@ -68,7 +66,7 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,g
         if unres:
             for i in range(len(evalue[1])):
                 if numgroups>0 and pop:
-                    total=0 
+                    total=0
                     for j in range(numgroups):
                         outputfile.write(str(total)+"\t"+str(evalue[1][i])+"\t")
                         total += MPA[1][i,j]
@@ -86,6 +84,7 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,g
 
     def densityofstates():
         """Do the density of status calculation."""
+        groupnames = list(groups.groups.keys()) if groups else []
 
         if groups and pop:
             contrib = [x * numpy.dot(x,overlap) for x in MOCoeff]
@@ -94,12 +93,12 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,g
             else:
                 MPA = [numpy.zeros( (logfile.nmo,numgroups), "d")
                        for x in range(2)]
-            for i,groupname in enumerate(groups.groups.keys()):
+            for i,groupname in enumerate(groupnames):
                 for basisfn in groups.groups[groupname]:
                     MPA[0][:,i] += contrib[0][:,basisfn]
                     if unres:
                         MPA[1][:,i] += contrib[1][:,basisfn]
-                    
+
         else: # Set MPA to be all ones
             MPA = [numpy.ones( (logfile.nmo,1), "d")]
             if unres:
@@ -116,21 +115,22 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,g
 
         if not (groups and pop):
             # No point outputting group info since we don't have the %contribs
-            outputfile.write("\nGroups:\t0\n")                
+            outputfile.write("\nGroups:\t0\n")
         else:
             outputfile.write("\nGroups:\t"+str(len(groups.groups))+"\n")
             line = []
-            for k,v in groups.groups.items():
-                line.append("%s\t%s" % (k," ".join(map(str,v))))
+            for groupname in groupnames:
+                v = groups.groups[groupname]
+                line.append("%s\t%s" % (groupname," ".join(map(str,v))))
             outputfile.write("\n".join(line) + "\n")
 
         if unres:
-            outputfile.write("\nAlpha MO\t\teV\tSymmetry")                
+            outputfile.write("\nAlpha MO\t\teV\tSymmetry")
         else:
             outputfile.write("\nMO\t\teV\tSymmetry")
-            
+
         if groups and pop:
-            t = "\t".join(groups.groups.keys())
+            t = "\t".join(groupnames)
             outputfile.write("\t" + t+"\tAccurate values (for the Electronic Transitions module)")
         if unres:
             if groups and pop:
@@ -158,10 +158,10 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,g
 
 
         # Print out a file suitable for drawing with origin
-        
+
         if makeorigin==True:
             originoutput(MPA)
-            
+
         # Convolute the DOS spectrum
 
         screen.write("\nConvoluting the DOS spectrum\n")
@@ -175,7 +175,7 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,g
         # Write the convoluted DOS spectrum to disk
         screen.write("Writing DOS spectrum to DOS_spectrum.txt\n")
         outputfile=open(os.path.join(gaussdir,"DOS_spectrum.txt"),"w")
-        
+
         firstline="DOS Spectrum"
         grouptext = ""
         if groups:
@@ -189,16 +189,16 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,g
 
         line="Energy (eV)"
         if groups and pop:
-            for x in groups.groups.keys():
+            for x in groupnames:
                 line=line+"\t"+x
             line+="\tTotal"
             if unres:
-                for x in groups.groups.keys():
+                for x in groupnames:
                     line=line+"\t"+x
                 line+="\tTotal"
         outputfile.write(line+"\n")
 
-        width=end-start                             
+        width=end-start
         for x in range(max([1000] + [len(y) for y in evalue])):
             line=""
             if x<1000: # Print the spectrum
@@ -234,22 +234,22 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,g
                     if x<len(evalue[1]):
                         line = line + str(evalue[1][x])
                 line=line+"\t-1"
-                    
+
             line=line+"\n"
             outputfile.write(line)
         outputfile.close()
 
         if root:
 
-            # Gnuplot the DOS spectrum as follows
+            # Plot the DOS spectrum as follows
             #
             # For res:
             #  one plot with stacked PDOS plus evalues at bottom
             # For unres:
             #  one plot with stacked sum_of_PDOS's plus both evalues at bottom
-            
-            g = Gnuplot(gnuplotexec)
-            
+
+            g = MPLPlot()
+
             if groups and pop:
                 screen.write("Plotting the stacked PDOS\n")
                 if not unres:
@@ -257,56 +257,58 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,g
                     for i in range(len(groups.groups)):
                         total += spectrum.spectrum[i,:]
                         g.data(zip(spectrum.xvalues,total),
-                               "title '%s' with lines" % groups.groups.keys()[i])
+                               title=groupnames[i])
                 else:
                     total = numpy.zeros(len(spectrum.xvalues),'d')
                     for i in range(len(groups.groups)):
                         total += spectrum.spectrum[i,:] + spectrum_beta.spectrum[i,:]
                         g.data(zip(spectrum.xvalues,total),
-                               "title '%s' with lines" % groups.groups.keys()[i])
+                               title=groupnames[i])
             else:
                 screen.write("Plotting the total DOS\n")
                 if not unres:
                     g.data(zip(spectrum.xvalues, spectrum.spectrum[0,:]),
-                           "title 'DOS spectrum' with lines")
+                           title="DOS spectrum")
                 else:
                     g.data(zip(spectrum.xvalues, spectrum.spectrum[0,:]),
-                           "title 'Alpha DOS spectrum' with lines")
+                           title='Alpha DOS spectrum')
                     g.data(zip(spectrum_beta.xvalues, spectrum_beta.spectrum[0,:]),
-                           "title 'Beta DOS spectrum' with lines")
+                           title='Beta DOS spectrum')
                     g.data(zip(spectrum.xvalues,
                               (spectrum.spectrum[0,:]+spectrum_beta.spectrum[0,:])*0.5),
-                           "title 'Total DOS spectrum (scaled by 0.5)' with lines")
-               
+                           title='Total DOS spectrum (scaled by 0.5)')
+
             # Plot the evalues
-            g.data([ (x,-1) for x in evalue[0][:HOMO[0]+1] ],
-                   "title '%sOccupied Orbitals' with impulses" % (["","Alpha "][unres]))
-            g.data([ (x,-1) for x in evalue[0][HOMO[0]+1:] ],
-                   "title '%sVirtual Orbitals' with impulses" % (["","Alpha "][unres]))
+            g.data([ (x,-1) for x in evalue[0][:HOMO[0]+1] ], vlines=True,
+                   title='%sOccupied orbitals' % ["","Alpha "][unres])
+            g.data([ (x,-1) for x in evalue[0][HOMO[0]+1:] ], vlines=True,
+                   title='%sVirtual orbitals' % ["","Alpha "][unres])
+
             if unres: # For the extra beta impulses
-                g.data([ (x,-1) for x in evalue[1][:HOMO[0]+1] ],
-                       "title 'Beta Occupied Orbitals' with impulses")
-                g.data([ (x,-1) for x in evalue[1][HOMO[0]+1:] ],
-                       "title 'Beta Virtual Orbitals' with impulses")
-                
-            g.commands("set xrange [%s:%s]" % (start,end),
-                       "set yrange [-1:*]",
-                       "set xlabel 'Energy (eV)'")
+                g.data([ (x,-1) for x in evalue[1][:HOMO[0]+1] ], vlines=True,
+                       title='Beta Occupied Orbitals')
+                g.data([ (x,-1) for x in evalue[1][HOMO[0]+1:] ], vlines=True,
+                       title='Beta Virtual Orbitals')
+
+            g.setlabels("Energy (eV)", "")
+            g.subplot.set_ylim(bottom=-1)
+            g.subplot.set_xlim(left=start, right=end)
+            g.subplot.legend(loc="upper right", prop={'size':8})
 
             if not unres:
-                DisplayPlot(root,g,"DOS spectrum")
+                DisplayPlot(root, g, "DOS spectrum")
             else:
-                DisplayPlot(root,g,"DOS spectrum (sum of alpha plus beta electrons)")
+                DisplayPlot(root, g, "DOS spectrum (sum of alpha plus beta electrons)")
 
         return # End of densityofstates()
-                
+
     def crystalorbital():
         """Do the COOP."""
 
         groupoverlap = [numpy.zeros( (len(evalue[0]),numgroups, numgroups), "d")]
         if unres:
             groupoverlap.append(numpy.zeros( (len(evalue[1]),numgroups, numgroups), "d"))
-        groupnames = groups.groups.keys()
+        groupnames = list(groups.groups.keys())
 
         for j in range(len(HOMO)):
             for k in range(len(evalue[j])):
@@ -321,7 +323,7 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,g
 
                         groupoverlap[j][k,groupa,groupb] = lap
                         groupoverlap[j][k,groupb,groupa] = lap
-        
+
 
         # Create COOP_data.txt
         output=open(os.path.join(gaussdir,"COOP_data.txt"),"w")
@@ -336,7 +338,7 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,g
         else:
             output.write("Alpha MO\t\tevalue\t%sBeta MO\t\tevalue\t%s\n" %
                          (listofoverlaps, listofoverlaps))
-        
+
         for k in range(max([len(x) for x in evalue])-1, -1, -1):
             for j in range(len(HOMO)):
                 if j==1 and k>=len(evalue[1]):
@@ -368,7 +370,7 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,g
         if unres:
             output.write("\t%s\t%s" % (listofoverlaps, listofoverlaps))
         output.write("\n")
-        
+
         for i in range(len(spectrum[0].xvalues)):
             output.write("%f" % spectrum[0].xvalues[i])
             for k in range(len(spectrum)):
@@ -379,11 +381,7 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,g
             output.write("\n")
         output.close()
 
-        # Gnuplot the COOP
-
-        g = Gnuplot(gnuplotexec)
-        g.commands("set xrange [%f:%f]" % (start,end),
-                   "set xlabel 'Energy (eV)'")
+        g = MPLPlot()
 
         i = 0
         for fragx in range(numgroups-1):
@@ -391,25 +389,25 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,g
                 for j in range(len(spectrum)):
                     if not unres:
                         g.data( zip(spectrum[j].xvalues,spectrum[j].spectrum[i,:]),
-                                " title 'overlap of %s with %s' with lines" % (groupnames[fragx],
-                                                                               groupnames[fragy]))
+                                title='overlap of %s with %s' % (groupnames[fragx], groupnames[fragy]))
                     else:
                         g.data( zip(spectrum[j].xvalues,spectrum[j].spectrum[i,:]),
-                                " title '%s overlap of %s with %s' with lines" % (['Alpha','Beta'][j],
-                                                                                  groupnames[fragx],
-                                                                                  groupnames[fragy]))
+                                title='%s overlap of %s with %s' % (['Alpha','Beta'][j], groupnames[fragx], groupnames[fragy]))
 ##                if unres: # Plot the total or not?
 ##                    g.data( zip(spectrum[j].xvalues,spectrum[0].spectrum[i,:] + spectrum[1].spectrum[i,:]),
-##                            " title 'Total overlap of %s with %s' with lines" % ( groupnames[fragx],
-##                                                                                  groupnames[fragy]))
+##                            title='Total overlap of %s with %s' % ( groupnames[fragx], groupnames[fragy]))
                 i += 1
+
+        g.setlabels("Energy (eV)", "")
+        g.subplot.set_xlim(left=start, right=end)
+        g.subplot.legend(loc="upper right", prop={'size':8})
         DisplayPlot(root,g,"COOP spectrum")
-        
+
         return # End of crystalorbital()
-    
+
 
 ############### START OF MAIN ##################
-    
+
     screen.write("Starting to analyse the molecular orbitals\n")
     groupatoms=[]; groupname=[]; atomorb=[]
 
@@ -443,7 +441,7 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,g
         if COOP==False:
             status = groups.verify("DOS")
         else:
-            status = groups.verify("COOP")            
+            status = groups.verify("COOP")
         if status:
             screen.write(status)
             return 1
@@ -453,7 +451,7 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,g
     screen.write("NBsUse is "+str(NBsUse)+"\n")
 
     pop=False
-    
+
     if hasattr(logfile, "aooverlaps") and hasattr(logfile, "mocoeffs"):
 
         screen.write("Found an overlap matrix and MO coefficients\n")
@@ -467,11 +465,11 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,g
             screen.write("This is an unrestricted calculation - found the Beta MO coefficents\n")
 
     unres=False
-    HOMO = logfile.homos    
+    HOMO = logfile.homos
     if len(HOMO)==2:
         screen.write("This is an unrestricted calculation\n")
         unres=True
-        
+
     evalue = logfile.moenergies
     if hasattr(logfile,"mosyms"):
         symmetry = logfile.mosyms
@@ -479,7 +477,7 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,g
         symmetry = [["?" for x in evalue[0]]]
         if unres:
             symmetry.append(["?" for x in evalue[1]])
-    
+
     screen.write("Number of evalues found: %s\n" %
                    " ".join([str(len(x)) for x in evalue]))
 
@@ -491,9 +489,8 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin,g
             screen.write("To calculate the COOP spectrum, you need Groups.txt and a log file containing a full population analysis\n")
             return 1
         crystalorbital()
-        
+
     else: # Density of States
         densityofstates()
 
-        
     screen.write("Finished\n")

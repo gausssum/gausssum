@@ -14,19 +14,9 @@
 
 from tkinter import *   # GUI stuff
 import tkinter.messagebox     # For the About Dialog
-import tkinter.filedialog     # For the Open File and Save File
-import webbrowser
 import tkinter.simpledialog
-import traceback
-import copy             # For deepcopy...until I find a better way of doing this
-import configparser     # For writing the settings to an .ini file
-
-from gausssum.plot import DisplayPlot
-from gausssum.gnupy import Gnuplot
 
 import os
-import sys
-import string
 
 class PreferencesPopupBox(simpledialog.Dialog):
 
@@ -35,7 +25,7 @@ class PreferencesPopupBox(simpledialog.Dialog):
         Toplevel.__init__(self, parent)
         self.transient(parent)
         self.settings=settings                    # Note that changes to self.settings will affect the global self.settings thru 'settings'
-        self.oldsettings=settings.copy()          # Remember the current settings
+        self.oldsettings = settings.copy()          # Remember the current settings
         if title:
             self.title(title)
 
@@ -55,7 +45,7 @@ class PreferencesPopupBox(simpledialog.Dialog):
         self.initial_focus.focus_set()
         self.wait_window(self)
 
-   
+
     def body(self,master): # Override
         # The content of the settings dialog box
 
@@ -63,43 +53,27 @@ class PreferencesPopupBox(simpledialog.Dialog):
         self.resizable(False,False)
         self.frame1=Frame(master,relief=SUNKEN,borderwidth=2)
         self.frame1.pack()
-        Label(self.frame1,text="Global Settings").pack()
-        self.frame2=Frame(self.frame1)
-        self.frame2.pack()
-        Label(self.frame1,text="").pack()
-        
+
         Label(self.frame1,text="Search file").pack()
         self.frame3=Frame(self.frame1)
         self.frame3.pack()
         Label(self.frame1,text="").pack()
-        
+
         Label(self.frame1,text="Frequencies").pack()
         self.frame4=Frame(self.frame1)
         self.frame4.pack()
         Label(self.frame1,text="").pack()
-        
+
         Label(self.frame1,text="Orbitals").pack()
         self.frame5=Frame(self.frame1)
         self.frame5.pack()
         Label(self.frame1,text="").pack()
-        
+
         Label(self.frame1,text="Electronic transitions").pack()
         self.frame6=Frame(self.frame1)
         self.frame6.pack()
         Label(self.frame1,text="").pack()
 
-        # The Global Settings section
-        self.frame2a=Frame(self.frame2)
-        self.frame2a.pack()
-        self.frame2b=Frame(self.frame2)
-        self.frame2b.pack()
-        Label(self.frame2b,text="Gnuplot:").grid(row=0,column=0)
-        self.gnuplot=Entry(self.frame2b,width=35)
-        self.gnuplot.grid(row=0,column=1)
-        self.gnuplot.delete(0,END)
-        self.gnuplot.insert(0,self.settings['global settings.gnuplot'])
-        Button(self.frame2b,text="Test",command=self.testgnuplot).grid(row=0,column=2,padx=5)
-        
         # The Find.py section
         Label(self.frame3,text="Search for:").grid(row=0,column=0)
         self.find=[None]*4
@@ -109,7 +83,7 @@ class PreferencesPopupBox(simpledialog.Dialog):
         self.find[3]=Entry(self.frame3,width=15)
         self.find[0].grid(row=0,column=1)
         self.find[1].grid(row=1,column=1)
-        self.find[2].grid(row=0,column=2)        
+        self.find[2].grid(row=0,column=2)
         self.find[3].grid(row=1,column=2)
         for i in range(4):
             self.find[i].delete(0,END)
@@ -122,19 +96,19 @@ class PreferencesPopupBox(simpledialog.Dialog):
         Label(self.frame4a,text="Start:").grid(row=0,column=0)
         self.irraman[0]=Entry(self.frame4a,width=5)
         self.irraman[0].grid(row=0,column=1)
-        Label(self.frame4a,text="End:").grid(row=0,column=2)        
+        Label(self.frame4a,text="End:").grid(row=0,column=2)
         self.irraman[1]=Entry(self.frame4a,width=5)
         self.irraman[1].grid(row=0,column=3)
-        Label(self.frame4a,text="Num pts:").grid(row=0,column=4)                
+        Label(self.frame4a,text="Num pts:").grid(row=0,column=4)
         self.irraman[2]=Entry(self.frame4a,width=5)
         self.irraman[2].grid(row=0,column=5)
-        Label(self.frame4a,text="FWHM:").grid(row=0,column=6)                
+        Label(self.frame4a,text="FWHM:").grid(row=0,column=6)
         self.irraman[3]=Entry(self.frame4a,width=5)
         self.irraman[3].grid(row=0,column=7)
 
         self.frame4b = Frame(self.frame4)
         self.frame4b.pack()
-    
+
         Label(self.frame4b,text="Exc. wavelength:").grid(row=0,column=0)
         self.irraman[4]=Entry(self.frame4b,width=5)
         self.irraman[4].grid(row=0,column=1)
@@ -152,10 +126,10 @@ class PreferencesPopupBox(simpledialog.Dialog):
         Label(self.frame5,text="Start:").grid(row=0,column=0)
         self.mo[0]=Entry(self.frame5,width=5)
         self.mo[0].grid(row=0,column=1)
-        Label(self.frame5,text="End:").grid(row=0,column=2)        
+        Label(self.frame5,text="End:").grid(row=0,column=2)
         self.mo[1]=Entry(self.frame5,width=5)
         self.mo[1].grid(row=0,column=3)
-        Label(self.frame5,text="FWHM").grid(row=0,column=4)                
+        Label(self.frame5,text="FWHM").grid(row=0,column=4)
         self.mo[2]=Entry(self.frame5,width=5)
         self.mo[2].grid(row=0,column=5)
         a=['start','end','fwhm']
@@ -169,16 +143,16 @@ class PreferencesPopupBox(simpledialog.Dialog):
         Label(self.frame6,text="Start:").grid(row=0,column=0)
         self.uvvis[0]=Entry(self.frame6,width=5)
         self.uvvis[0].grid(row=0,column=1)
-        Label(self.frame6,text="End:").grid(row=0,column=2)        
+        Label(self.frame6,text="End:").grid(row=0,column=2)
         self.uvvis[1]=Entry(self.frame6,width=5)
         self.uvvis[1].grid(row=0,column=3)
-        Label(self.frame6,text="Num pts:").grid(row=0,column=4)                
+        Label(self.frame6,text="Num pts:").grid(row=0,column=4)
         self.uvvis[2]=Entry(self.frame6,width=5)
         self.uvvis[2].grid(row=0,column=5)
-        Label(self.frame6,text="FWHM:").grid(row=0,column=6)                
+        Label(self.frame6,text="FWHM:").grid(row=0,column=6)
         self.uvvis[3]=Entry(self.frame6,width=5)
         self.uvvis[3].grid(row=0,column=7)
-        Label(self.frame6,text="sigma:").grid(row=0,column=8)                
+        Label(self.frame6,text="sigma:").grid(row=0,column=8)
         self.uvvis[4]=Entry(self.frame6,width=5)
         self.uvvis[4].grid(row=0,column=9)
 
@@ -189,7 +163,7 @@ class PreferencesPopupBox(simpledialog.Dialog):
 
         x = (652-450)//2 + self.parent.winfo_rootx()
         y = (480-410)//2 + self.parent.winfo_rooty()
-        
+
         self.geometry("450x460+"+str(x)+"+"+str(y)) # Place it in the centre of the root window
 
     def buttonbox(self): # Override
@@ -212,7 +186,7 @@ Make sure you include the full path, filename and extension (if any).
 
 For example (in Windows): C:\\Program Files\\Gaussian\\cubman.exe'''
                                    )
-            
+
     def checkformchk(self, event=None): # Checks for existence of formchk at specificed location
         if not os.path.isfile(self.formchk.get()):
             messagebox.showerror(title="No such file",
@@ -235,38 +209,11 @@ Make sure you include the full path, filename and extension (if any).
 For example (in Windows): C:\\Program Files\\Gaussian\\cubegen.exe'''
                                    )
 
-    def testgnuplot(self, event=None): # Tests Gnuplot!!
-        if os.path.isfile(self.gnuplot.get()):
-            g = Gnuplot(self.gnuplot.get())
-            g.commands("set isosample 50")
-            g.commands("set hidden3d")
-            g.commands("unset border")
-            g.commands("unset xtics")
-            g.commands("unset ytics")
-            g.commands("unset ztics")
-            g.commands("set xrange [-1.5:1.5]")
-            g.commands("set yrange [-1.5:1.5]")
-            g.commands("set zrange [0:1]")
-            g.commands("set view 50,50,,1.4")
-            g.function3d("exp(-x*x-y*y)","notitle")
-            DisplayPlot(self.parent,g,"You should see the GaussSum logo below...drawn by Gnuplot")
-        else:
-            messagebox.showerror(title="No such file",
-                                   message='''
-There isn't any file with this name.
-                                   
-Make sure you include the full path, filename and extension (if any).
-
-For example (in Windows): C:\\Program Files\\Gnuplot\\bin\\Wgnuplot.exe'''
-                                   )
-            
- 
 
     def ok(self, event=None): # Override
         # Remembers the settings
         # If they are different from before, they will be saved by 'preferences()'
 
-        self.settings['global settings.gnuplot']=self.gnuplot.get()   
         a=['start','end','numpoints','fwhm','excitation','temperature']
         for i in range(6):
             self.settings['ir_raman.%s'%(a[i])]=self.irraman[i].get()
@@ -277,7 +224,7 @@ For example (in Windows): C:\\Program Files\\Gnuplot\\bin\\Wgnuplot.exe'''
         self.settings['uvvis.sigma']=self.uvvis[4].get()
         a=['start','end','fwhm']
         for i in range(3):
-            self.settings['mo.%s'%(a[i])]=self.mo[i].get()            
+            self.settings['mo.%s'%(a[i])]=self.mo[i].get()
 
         if not self.validate():
             self.initial_focus.focus_set() # put focus back
