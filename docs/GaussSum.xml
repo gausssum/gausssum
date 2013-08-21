@@ -10,7 +10,6 @@
 <!ENTITY uv_vis SYSTEM "UVVis.xml">
 <!ENTITY preface SYSTEM "preface.xml">
 <!ENTITY find SYSTEM "find.xml">
-<!ENTITY gnuplotprobs SYSTEM "gnuplotprobs.xml">
 <!ENTITY scfgeoopt SYSTEM "scfgeoopt.xml">
 <!ENTITY automate SYSTEM "automate.xml">
 <!ENTITY DOS SYSTEM "DOS.xml">
@@ -30,8 +29,6 @@
 	
 	&find;
 	
-	&gnuplotprobs;
-
 	&scfgeoopt;
 	
 	&ir_raman;

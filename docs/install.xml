@@ -1,7 +1,7 @@
 	<chapter>
 		<title>Installation</title>
 		<para>
-  This chapter describes how to install and run &gs; on computers running Windows or Linux. Note that there are two choices for installing in Windows. One is to install an all-in-one bundle of Python/Numpy/Pillow/GaussSum (the easier method), the other is to install the &gs; sources and the required libraries separately.
+  This chapter describes how to install and run &gs; on computers running Windows or Linux. Note that there are two choices for installing in Windows. One is to install an all-in-one bundle of Python/Numpy/Matplotlib/GaussSum (the easier method), the other is to install the &gs; sources and the required libraries separately.
 		</para>
 
 		<section id="WinInstall" xreflabel="Installing all-in-one on Windows">
@@ -30,19 +30,19 @@
 					Go to the <ulink url="https://sourceforge.net/projects/numpy/files/NumPy/">Numpy download page</ulink>. Download and run the Windows installer for your version of Python.
 				</para>
 			</sect2>
-			<sect2 id="WinPIL" xreflabel="Installing PIL">
-				<title>Install Pillow</title>
+			<sect2 id="WinMPL" xreflabel="Installing Matplotlib">
+				<title>Install Matplotlib</title>
 				<para>
-					In order to create .png images, &gs; requires Pillow, which is a Python package that allows image manipulation.</para> 
+					In order to draw the graphs, &gs; requires the Python package Matplotlib.</para> 
 				<para>
-					Go to the <ulink url="https://pypi.python.org/pypi/Pillow/2.1.0">Pillow download page</ulink>. Download the Windows installer for your version of Python.
+					Go to the <ulink url="http://matplotlib.org/downloads.html">Matplotlib download page</ulink>. Download and run the Windows installer for your version of Python.
 				</para>
 			</sect2>
 
-			<sect2 id="WinGauInstall" xreflabel="Install the GaussSum Python scripts and &gp;">
-				<title>Install the &gs; Python scripts and &gp;</title>
+			<sect2 id="WinGauInstall" xreflabel="Install the GaussSum Python scripts">
+				<title>Install the &gs; Python scripts</title>
 				<para>
-					The scripts can be found <ulink url="http://prdownloads.sourceforge.net/gausssum/GaussSum-&pointversion;.zip?download">here</ulink>. Extract the zip file into something like <filename>C:\Program Files\GaussSum</filename> (note: &gp; is included in this zip file in the sub folder <filename>gnuplot400</filename>).
+					The scripts can be found <ulink url="http://prdownloads.sourceforge.net/gausssum/GaussSum-&pointversion;.zip?download">here</ulink>. Extract the zip file into something like <filename>C:\Program Files (x86)\GaussSum</filename>.
 				</para>
 				<para>
 					Create a shortcut on your desktop to <filename>GaussSum.py</filename> (to do this, right-click on an empty part of the desktop, choose New -> Shortcut, browse to the folder where you installed &gs; and choose <filename>GaussSum.py</filename>). To change the icon, right-click on the icon, choose Properties -> General -> Change Icon -> Browse. Find the folder where you installed &gs; and choose <filename>GaussSum.ico</filename>. In addition, change the program used to open &gs; by following these instructions: right-click on the icon, choose Properties -> General -> Opens with -> Change -> PythonW. If you want to set a startup folder, right-click on the icon, choose Properties -> Shortcut -> Start in:, and type the name of the startup folder.
@@ -73,10 +73,10 @@
 			<sect2>
 				<title>Install &py;</title>
 				<para>
-					Check to see if you already have &py;, by typing '<command>which python</command>' in a shell window.
+					Check to see if you already have &py;, by typing '<command>which python3</command>' in a shell window.
 				</para>
 				<para>
-					If you have &py;, type '<command>python</command>'. The version number should be displayed. If this is less than 3.1, the scripts may not work with your currently installed &py; version. (Press 'CTRL+D, ENTER' to exit.)
+					If you have &py;, type '<command>python3</command>'. The version number should be displayed. If this is less than 3.1, the scripts may not work with your currently installed &py; version. (Press 'CTRL+D, ENTER' to exit.)
 				</para>
 				<para>
 					If you need to install Python, follow the appropriate instructions for your system at <ulink url="http://www.python.org">www.python.org</ulink>. You should install the latest version of Python 3.3 (although Python 3.1 and 3.2 also work fine with &gs;). If you are using Debian Linux, &py; will be downloaded and installed if you issue the following command as root: '<command>apt-get install python3 python3-tk</command>'.
@@ -89,9 +89,8 @@
 				</para>
 			</sect2>
 			<sect2>
-				<title>Install Pillow</title>
-				<para>Pillow is a Python package that allows manipulation of images. &gs; requires Pillow to handle PNG images. You can get Pillow 2.1.0 from <ulink url="http://www.pythonware.com/products/pil/#pil117">here</ulink> under "Python Imaging Library 1.1.7 Source Kit (all platforms)". This should be untarred into a folder in the usual way, using '<command>tar zxvf Imaging-1.1.7.tar.gz</command>'. Next, go into the folder created and (as root) install the package as follows: '<command>python setup.py install</command>'.</para>
-				<para>If you are using Debian Linux, the Python Imaging Library will be downloaded and installed if you issue the following command as root: '<command>apt-get install python-imaging python-imaging-tk</command>'.</para>
+				<title>Install Matplotlib</title>
+                <para>Matplotlib is a Python package for drawing graphs. It should be available through your package manager. You should install the version for Python3. If it is not available, you should download and build it from source. Instructions are available from the <ulink href="http://matplotlib.org/users/installing.html">Matplotlib website</ulink>.</para>
 			</sect2>
 			<sect2>
 				<title>Download &gs;</title>
