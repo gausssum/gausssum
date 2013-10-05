@@ -14,10 +14,11 @@ setup(name="GaussSum",
       author="Noel O'Boyle",
       author_email="baoilleach@users.sf.net",
       url="http://gausssum.sf.net",
-      executables = [Executable('GaussSum.py', base="Win32GUI")],
+      executables = [Executable('GaussSum.py', base="Win32GUI", shortcutName="GaussSum", shortcutDir = "ProgramMenuFolder")],
       options = {"build_exe" : {
           "icon" : "../logo/GaussSum.ico",
           "includes": ["gausssum"],
           "include_files" : [('gausssum/mesh.gif', 'mesh.gif'), ('gausssum/mesh2.gif', 'mesh2.gif')] + list(zip(docfiles, docfiles_dest)),
-          "packages":["six"]}}, # Workaround to avoid error message
+          "packages":["six"], # Workaround to avoid error message
+          }},
       )
