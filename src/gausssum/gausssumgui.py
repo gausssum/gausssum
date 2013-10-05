@@ -36,7 +36,7 @@ from gausssum.utils import *
 from gausssum.folder import folder
 
 import os, sys
-if hasattr(sys, "frozen"): # i.e. if using py2exe
+if hasattr(sys, "frozen"): # i.e. if using cx_Freeze
     installlocation = os.path.dirname(sys.executable)
 else:
     import gausssum
@@ -604,6 +604,9 @@ class App:    # This sets up the GUI
             self.saveprefs() # Save the inital settings file
 
     def webdocs(self):
-        webbrowser.open(os.path.join(installlocation, "..", "Docs", "index.html"))
+        if hasattr(sys, "frozen"): # Using cx_Freeze
+            webbrowser.open(os.path.join(installlocation, "Docs", "index.html"))
+        else:
+            webbrowser.open(os.path.join(installlocation, "..", "Docs", "index.html"))
 
 
