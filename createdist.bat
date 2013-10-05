@@ -1,5 +1,5 @@
-rem echo off
-set ver=2.3
+@echo off
+set /p ver=<version.txt
 set dist=dist\GaussSum-%ver%
 mkdir %dist%
 

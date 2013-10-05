@@ -16,7 +16,10 @@
    inkscape:version="0.48.0 r9654"
    sodipodi:docname="letters.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   version="1.1">
+   version="1.1"
+   inkscape:export-filename="C:\Tools\Gausssum\mercurial\logo\letters.png"
+   inkscape:export-xdpi="90.917671"
+   inkscape:export-ydpi="90.917671">
   <defs
      id="defs4">
     <inkscape:perspective
@@ -56,6 +59,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -73,7 +77,7 @@
          id="tspan1902"
          x="253.73802"
          y="152.62637"
-         style="font-size:30px;fill:#ffff00">2.3</tspan></text>
+         style="font-size:30px;fill:#ffff00">3.0</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:36px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Sylfaen"
@@ -84,7 +88,7 @@
          id="tspan1878"
          x="252.89867"
          y="151.70497"
-         style="font-size:30px">2.3</tspan></text>
+         style="font-size:30px">3.0</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:36px;font-style:normal;font-weight:normal;fill:yellow;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sylfaen"
