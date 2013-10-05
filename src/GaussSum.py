@@ -14,14 +14,14 @@
 # General Public License for more details.
 
 from tkinter import *   # GUI stuff
-from gausssum import gausssumgui
+import gausssum.gausssumgui
 
 if __name__=="__main__":
 
     root = Tk()
     root.title("GaussSum")
 
-    app = gausssumgui.App(root,sys.argv)   # Set up the app...
+    app = gausssum.gausssumgui.App(root,sys.argv)   # Set up the app...
 
     mainloop()  # ...and sit back
 
