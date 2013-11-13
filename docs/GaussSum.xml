@@ -14,7 +14,7 @@
 <!ENTITY automate SYSTEM "automate.xml">
 <!ENTITY DOS SYSTEM "DOS.xml">
 <!ENTITY version "3.0">
-<!ENTITY pointversion "3.0b1">
+<!ENTITY pointversion "3.0">
 ]>
 
 <book>
