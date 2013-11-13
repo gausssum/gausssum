@@ -9,7 +9,7 @@
 				It is written by Noel O'Boyle and is available for free under the GNU Public License. For up-to-date information, please see <ulink url="http://gausssum.sf.net">http://gausssum.sf.net</ulink>.
 			</para>
 			<para>
-				&gs; version 2.2 can do the following:
+				&gs; version 3.0 can do the following:
 			</para>
 			<itemizedlist>
 				<listitem>
@@ -44,8 +44,15 @@
 				</listitem>
 				<listitem><para>Handle compressed log files (.zip, .gz, .bz2) as easily as regular log files.</para>
 				</listitem>
-				
 			</itemizedlist>
+
+<para>Release Notes for Version 2.3.0:</para>
+<itemizedlist>
+<listitem><para>Move to Python 3</para></listitem>
+<listitem><para>Use Matplotlib instead of Gnuplot</para></listitem>
+<listitem><para>Update in parsing library (to cclib r1064)</para></listitem>
+</itemizedlist>
+
             <para>Release Notes for Version 2.2.6.1: Bugfix for 2.2.6. Gnuplot location undefined for new users of GaussSum (Guillaume Lamoureux).</para>
 
 			<para>Release Notes for Version 2.2.6: A patch from Thomas Pijper was integrated to enable calculation of Raman intensities (from Raman activity). Support has been added for calculating charge density changes for unrestricted calculations (requested by Phil Schauer). Blank lines in Groups.txt are now ignored.</para>
@@ -114,7 +121,7 @@ Release Notes for Version 2.0: main differences compared to &gs; 1.0
 			<para>If you use &gs; to obtain results for publication, please cite it as follows:</para>
 			<para>N. M. O'Boyle, A. L. Tenderholt and K. M. Langner. J. Comp. Chem., 2008, 29, 839-845.</para>
 
-		<para>Here is a list of some papers that cite &gs;.</para>
+		<para>Here is a list of some papers that cite &gs; from 2004 to 2009. There are many more papers since 2009 and I thank you for your continued support.</para>
 		
 		<orderedlist>
 <listitem><para>
