@@ -30,7 +30,6 @@ class MPLPlot(object):
 
     def data(self, mtuples, lines=True, title=None, vlines=False, y2axis=""):
         color = colors[self.cindex]
-        xvals, yvals = zip(*mtuples)
         if y2axis:
             new_axis = self.subplot.twinx()
             new_axis.set_ylabel(y2axis)
@@ -39,6 +38,8 @@ class MPLPlot(object):
         else:
             axis = self.subplot
 
+        if not mtuples: return
+        xvals, yvals = zip(*mtuples)
         if not lines:
             axis.plot(xvals, yvals, "x", color=color, label=title)
         else:
