@@ -9,7 +9,7 @@
 				It is written by Noel O'Boyle and is available for free under the GNU Public License. For up-to-date information, please see <ulink url="http://gausssum.sf.net">http://gausssum.sf.net</ulink>.
 			</para>
 			<para>
-				&gs; version 3.0 can do the following:
+				&gs; version &version; can do the following:
 			</para>
 			<itemizedlist>
 				<listitem>
@@ -46,9 +46,9 @@
 				</listitem>
 			</itemizedlist>
 
-<para>Release Notes for Version 2.3.0:</para>
+<para>Release Notes for Version 3.0:</para>
 <itemizedlist>
-<listitem><para>Move to Python 3</para></listitem>
+<listitem><para>This is the first version of &gs; that uses Python 3 instead of Python 2</para></listitem>
 <listitem><para>Use Matplotlib instead of Gnuplot</para></listitem>
 <listitem><para>Update in parsing library (to cclib r1064)</para></listitem>
 </itemizedlist>
