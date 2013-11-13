@@ -8,7 +8,7 @@
 # received a copy of the license along with cclib. You can also access
 # the full license online at http://www.gnu.org/copyleft/lgpl.html.
 
-__revision__ = "$Revision: 1043 $"
+__revision__ = "$Revision: 1064 $"
 
 import re
 
@@ -678,14 +678,14 @@ class Gaussian(logfileparser.Logfile):
             while line.strip() != "":
 
                 # The line with indices
-                if line[1:15].strip() == "" and line[15:22].strip().isdigit():
-                    freqbase = int(line[15:22])
+                if line[1:15].strip() == "" and line[15:23].strip().isdigit():
+                    freqbase = int(line[15:23])
                     if freqbase == 1 and hasattr(self, 'vibfreqs'):
                         # This is a reparse of this information
                         removeold = True
 
                 # Lines with symmetries and symm. indices begin with whitespace.
-                if line[1:15].strip() == "" and not line[15:22].strip().isdigit():
+                if line[1:15].strip() == "" and not line[15:23].strip().isdigit():
 
                     if not hasattr(self, 'vibsyms'):
                         self.vibsyms = []
@@ -1189,6 +1189,17 @@ class Gaussian(logfileparser.Logfile):
                 self.atomcharges["mulliken"] = charges
             else:
                 self.atomcharges["lowdin"] = charges
+
+        if line.strip() == "Natural Population":
+            line1 = next(inputfile)
+            line2 = next(inputfile)
+            if line1.split()[0] == 'Natural' and line2.split()[2] == 'Charge':
+                dashes = next(inputfile)
+                charges = []
+                for i in range(self.natom):
+                    nline = next(inputfile)
+                    charges.append(float(nline.split()[2]))
+                self.atomcharges["natural"] = charges
 
 
 
