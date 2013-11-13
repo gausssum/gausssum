@@ -4,14 +4,14 @@
   This chapter describes how to install and run &gs; on computers running Windows or Linux. Note that there are two choices for installing in Windows. One is to install an all-in-one bundle of Python/Numpy/Matplotlib/GaussSum (the easier method), the other is to install the &gs; sources and the required libraries separately.
 		</para>
 
-		<section id="WinInstall" xreflabel="Installing all-in-one on Windows">
+		<section id="WinInstall" xreflabel="Using the all-in-one installer on Windows">
 			<title>Installing an all-in-one bundle on Windows</title>
-			<para>Download the quite large all-in-one bundle from <ulink url="http://prdownloads.sourceforge.net/gausssum/GaussSumexe-&pointversion;.zip?download">here</ulink>. Extract the zip file into something like <filename>C:\Program Files\GaussSum2.3</filename>. To run, just doubleclick on <filename>GaussSum.exe</filename>. You may find it useful to create a shortcut on your desktop to <filename>GaussSum.exe</filename> (to do so, right-click on an empty part of the desktop, choose New -> Shortcut, browse to the folder where you installed &gs; and choose <filename>GaussSum.exe</filename>). If you want to set a startup folder, right-click on the icon, choose Properties -> Shortcut -> Start in:, and type the name of the startup folder.
+			<para>Download the quite large all-in-one bundle from <ulink url="http://prdownloads.sourceforge.net/gausssum/GaussSum-&pointversion;.msi?download">here</ulink>. Doubleclick on the .msi file to install it into something like <filename>C:\Program Files (x86)\GaussSum</filename>. A shortcut will be added to the Start Menu.
 			</para>
 		</section>
 
 		<section xreflabel="Separate install">
-			<title>Installing the &gs; scripts in Windows</title>
+			<title>Installing the &gs; scripts on Windows</title>
 
 			<sect2 id="WinPyInstall" xreflabel="Installing &py;">
 				<title>Install &py;</title>
@@ -60,7 +60,7 @@
 		</section>
 
 		<section>
-			<title>Installing in Linux</title>
+			<title>Installing on Linux</title>
 			<sect2>
 				<title>Install &gp;</title>
 				<para>
