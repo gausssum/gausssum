@@ -19,7 +19,7 @@ chmod a-x $source/gausssum/cclib/*.py
 chmod a-x $source/gausssum/cclib/parser/*.py 
 
 mkdir $distdir
-cp $source/*.py $distdir
+cp $source/GaussSum.py $distdir
 
 mkdir $distdir/gausssum
 cp $source/gausssum/*.py $source/gausssum/*.gif $distdir/gausssum
