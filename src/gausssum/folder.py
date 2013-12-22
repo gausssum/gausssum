@@ -19,10 +19,10 @@ import os
 
 def folder(screen, logfilename, create=True):
      # Create the output directory if necessary
-     
+
     logdir=os.path.dirname(logfilename)
     logname=os.path.basename(logfilename)
-    gaussdir=os.path.join(logdir,"gausssum2.2")
+    gaussdir=os.path.join(logdir,"gausssum3")
     if create:
         if not os.path.isdir(gaussdir):
             screen.write("Creating new output folder\n")
@@ -31,5 +31,3 @@ def folder(screen, logfilename, create=True):
             screen.write("Using old output folder\n")
     return gaussdir
 
-  
-    
