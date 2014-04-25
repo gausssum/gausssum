@@ -1,14 +1,12 @@
 # This file is part of cclib (http://cclib.sf.net), a library for parsing
 # and interpreting the results of computational chemistry packages.
 #
-# Copyright (C) 2006, the cclib development team
+# Copyright (C) 2006-2014, the cclib development team
 #
 # The library is free software, distributed under the terms of
 # the GNU Lesser General Public version 2.1 or later. You should have
 # received a copy of the license along with cclib. You can also access
 # the full license online at http://www.gnu.org/copyleft/lgpl.html.
-
-__revision__ = "$Revision: 1043 $"
 
 import re
 
@@ -131,8 +129,7 @@ class GAMESSUK(logfileparser.Logfile):
             # be recorded already, in the "molecular geometry" section
             # (note: single-point calculations have no "nuclear coordinates" only
             # "molecular geometry")
-            if self.progress:
-                self.updateprogress(inputfile, "Coordinates")
+            self.updateprogress(inputfile, "Coordinates")
 
             if self.firstnuccoords:
                 self.firstnuccoords = False
@@ -163,6 +160,9 @@ class GAMESSUK(logfileparser.Logfile):
             if not hasattr(self, "atomnos") or len(self.atomnos) == 0:
                 self.atomnos = atomnos
 
+        if line[40:62] == "optimization converged":
+            self.optdone = True
+
         if line[1:32] == "total number of basis functions":
             self.nbasis = int(line.split()[-1])
             while line.find("charge of molecule")<0:
@@ -184,8 +184,7 @@ class GAMESSUK(logfileparser.Logfile):
             blank = next(inputfile)
             i = 0
             while i < self.nbasis:
-                if self.progress:
-                    self.updateprogress(inputfile, "Overlap")
+                self.updateprogress(inputfile, "Overlap")
 
                 blank = next(inputfile)
                 blank = next(inputfile)
@@ -456,8 +455,7 @@ class GAMESSUK(logfileparser.Logfile):
 
             mo = 0
             while mo < self.nmo:
-                if self.progress:
-                    self.updateprogress(inputfile, "Coefficients")
+                self.updateprogress(inputfile, "Coefficients")
 
                 blank = next(inputfile)
                 blank = next(inputfile)
