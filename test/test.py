@@ -9,7 +9,7 @@ import collections
 gausssumdir = os.path.join("..")
 sys.path.append(os.path.join(gausssumdir, "src"))
 version = open(os.path.join(gausssumdir, "version.txt")).read().rstrip()
-ver = ".".join(version.split(".")[:2])
+majorver = version.split(".")[0]
 root = tkinter.Tk()
 
 from gausssum.electrontrans import ET
@@ -28,17 +28,19 @@ def parse(filename):
     log = ccopen(filename)
     log.logger.setLevel(50) # (logging.ERROR)
     return log.parse()
-    
+
 def runone(filename):
     clearoutput(filename)
     data = parse(filename)
 
     ET(None, sys.stdout, data, filename, 200, 500, 500, 3000, True,
-       None, False)
+       False)
     sys.exit()
 
 def gaussdir(filename):
-    return os.path.join(os.path.dirname(filename), "gausssum%s" % ver)
+    gd = os.path.join(os.path.dirname(filename), "gausssum%s" % majorver)
+    print("GaussDir is %s" % gd)
+    return gd
 
 def helptestTDDFT(filename, result):
     clearoutput(filename)
@@ -47,7 +49,7 @@ def helptestTDDFT(filename, result):
     root = tkinter.Tk()
 
     ET(None, sys.stdout, data, filename, 200, 500, 500, 3000, True,
-       None, False)
+       False)
 
     contribs = [x for x in open(os.path.join(gaussdir(filename), "UVData.txt"))
                 if x.startswith("1")][0]
@@ -61,7 +63,7 @@ def test_ECCD():
 
     Sigma = 2.402185 # Because it corresponds to a FWHM of 2.0
     ET(None, sys.stdout, data, filename, 100, 300, 10000, Sigma, False,
-       None, False)
+       False)
 
     spectrum = [list(map(float, x.split()[:3])) for x in open(os.path.join(gaussdir(filename), "CDSpectrum.txt")) if not x[0]=="E"]
 
@@ -108,21 +110,20 @@ def test_IR():
     data = parse(filename)
 
     Vibfreq(None, sys.stdout, data, filename, 1000, 2000, 100, 5,
-            "Gen", 1.0, 785, 293.15,
-            None)
+            "Gen", 1.0, 785, 293.15)
 
-    assert os.path.isfile(os.path.join("exampleIR", "gausssum%s" % ver, "IRSpectrum.txt"))
-    assert os.path.isfile(os.path.join("exampleIR", "gausssum%s" % ver, "RamanSpectrum.txt"))
+    assert os.path.isfile(os.path.join(gaussdir(filename), "IRSpectrum.txt"))
+    assert os.path.isfile(os.path.join(gaussdir(filename), "RamanSpectrum.txt"))
 
     # Add scaling factors
     for name in ["IR", "Raman"]:
         with open("test%s.txt" % name, "w") as f:
-            for i, line in enumerate(open(os.path.join("exampleIR", "gausssum%s" % ver, "%sSpectrum.txt" % name), "r")):
+            for i, line in enumerate(open(os.path.join(gaussdir(filename), "%sSpectrum.txt" % name), "r")):
                 broken = line.split("\t")
                 if i > 2 and len(line) > 4:
                     broken[-2] = "%f" % (i*0.2,)
                 f.write("\t".join(broken))
-    
+
     # Check that they can be read
     for name in ["IR", "Raman"]:
         scale = collections.defaultdict(int) # Duck-typing to pretend it's a list        
@@ -151,24 +152,25 @@ def test_MO_contribs():
 
     for unres, popfile, tdfile, mos, mocontribs, excitations, change in data:
         filename = os.path.join("exampleTDDFT", popfile)
+        gd = gaussdir(filename)
         clearoutput(filename)
         data = parse(filename)
 
         # Without groups.txt
-        Popanalysis(None, sys.stdout, data, filename, -20, 0, False, 0.3, False, None)
-        assert os.path.isfile(os.path.join("exampleTDDFT", "gausssum%s" % ver, "orbital_data.txt"))
-        with open(os.path.join("exampleTDDFT", "gausssum%s" % ver, "orbital_data.txt")) as f:
+        Popanalysis(None, sys.stdout, data, filename, -20, 0, False, 0.3, False)
+        assert os.path.isfile(os.path.join(gd, "orbital_data.txt"))
+        with open(os.path.join(gd, "orbital_data.txt")) as f:
             while True:
                 line = next(f)
                 if line.find("L+") >= 0: break
             assert line.rstrip() == "\t".join(mos)
 
         # With groups.txt
-        with open(os.path.join("exampleTDDFT", "gausssum%s" % ver, "Groups.txt"), "w") as f:
+        with open(os.path.join(gd, "Groups.txt"), "w") as f:
             f.write("\n".join(["atoms", "First", "1-3", "Second", "4-12"]))
-        Popanalysis(None, sys.stdout, data, filename, -20, 0, False, 0.3, False, None)
-        assert os.path.isfile(os.path.join("exampleTDDFT", "gausssum%s" % ver, "orbital_data.txt"))
-        with open(os.path.join("exampleTDDFT", "gausssum%s" % ver, "orbital_data.txt")) as f:
+        Popanalysis(None, sys.stdout, data, filename, -20, 0, False, 0.3, False)
+        assert os.path.isfile(os.path.join(gd, "orbital_data.txt"))
+        with open(os.path.join(gd, "orbital_data.txt")) as f:
             while True:
                 line = next(f)
                 if line.find("L+") >= 0: break
@@ -185,9 +187,9 @@ def test_MO_contribs():
         filename = os.path.join("exampleTDDFT", tdfile)
         data = parse(filename)
         ET(None, sys.stdout, data, filename, 200, 500, 500, 3000, True,
-           None, False)
-        assert os.path.isfile(os.path.join("exampleTDDFT", "gausssum%s" % ver, "UVData.txt"))
-        with open(os.path.join("exampleTDDFT", "gausssum%s" % ver, "UVData.txt")) as f:
+           False)
+        assert os.path.isfile(os.path.join(gd, "UVData.txt"))
+        with open(os.path.join(gd, "UVData.txt")) as f:
             while True:
                 line = next(f)
                 if line.find("Wavelength") >= 0:
@@ -197,16 +199,19 @@ def test_MO_contribs():
             assert line[7:9] == change
 
 def test_groups():
-        filename = os.path.join("exampleTDDFT", "benzene_pop.out")
-        data = parse(filename)
+        logfilename = os.path.join("exampleTDDFT", "benzene_pop.out")
+        gd = gaussdir(logfilename)
+        if not os.path.isdir(gd):
+            os.mkdir(gd)
+        data = parse(logfilename)
         ans = {"First":list(range(0, 20)), "Second": list(range(20, 66))}
-        
+
         examples = [["atoms", "First", "1-3", "Second", "4-12"],
                     ["atoms", "  First", "1-3", "Second", "   4-12"],
                     ["", "atoms", "  First", "1-3", "Second", "   4-12"],
                     ["atoms", "  First", "1-3", "Second", "   4-12", "" , ""]]
         for example in examples:
-            filename = os.path.join("exampleTDDFT", "gausssum%s" % ver, "Groups.txt")
+            filename = os.path.join(gd, "Groups.txt")
             with open(filename, "w") as f:
                 f.write("\n".join(example))
             groups = Groups(filename, data.atomnos, data.aonames, data.atombasis)
