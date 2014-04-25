@@ -1,14 +1,14 @@
 # This file is part of cclib (http://cclib.sf.net), a library for parsing
 # and interpreting the results of computational chemistry packages.
 #
-# Copyright (C) 2007, the cclib development team
+# Copyright (C) 2007-2014, the cclib development team
 #
 # The library is free software, distributed under the terms of
 # the GNU Lesser General Public version 2.1 or later. You should have
 # received a copy of the license along with cclib. You can also access
 # the full license online at http://www.gnu.org/copyleft/lgpl.html.
 
-__revision__ = "$Revision: 1060 $"
+from __future__ import print_function
 
 import numpy
 
@@ -72,104 +72,62 @@ class ORCA(logfileparser.Logfile):
             self.charge = charge
             self.mult = mult
 
-        # Here is how a typical SCF convergence output looks like:
+        # SCF convergence output begins with
         #
         # --------------
         # SCF ITERATIONS
         # --------------
-        # ITER       Energy         Delta-E        Max-DP      RMS-DP      [F,P]     Damp
-        #                ***  Starting incremental Fock matrix formation  ***
-        #   0   -384.5203638934   0.000000000000 0.03375012  0.00223249  0.1351565 0.7000
-        #   1   -384.5792776162  -0.058913722842 0.02841696  0.00175952  0.0734529 0.7000
-        #                                ***Turning on DIIS***
-        #   2   -384.6074211837  -0.028143567475 0.04968025  0.00326114  0.0310435 0.0000
-        #   3   -384.6479682063  -0.040547022616 0.02097477  0.00121132  0.0361982 0.0000
-        #   4   -384.6571124353  -0.009144228947 0.00576471  0.00035160  0.0061205 0.0000
-        #   5   -384.6574659959  -0.000353560584 0.00191156  0.00010160  0.0025838 0.0000
-        #   6   -384.6574990782  -0.000033082375 0.00052492  0.00003800  0.0002061 0.0000
-        #   7   -384.6575005762  -0.000001497987 0.00020257  0.00001146  0.0001652 0.0000
-        #   8   -384.6575007321  -0.000000155848 0.00008572  0.00000435  0.0000745 0.0000
-        #          **** Energy Check signals convergence ****
+        # 
+        # However, there are two common formats which need to be handled.
+        # These are seperate functions.
+
         if "SCF ITERATIONS" in line:
 
             dashes = next(inputfile)
             line = next(inputfile).split()
 
-            assert line[1] == "Energy"
-            assert line[2] == "Delta-E"
-            assert line[3] == "Max-DP"
+            if line[1] == "Energy":
+                self.parse_scf_condensed_format(inputfile, line)
+            elif line[1] == "Starting":
+                self.parse_scf_expanded_format(inputfile, line)
 
-            if not hasattr(self, "scfvalues"):
-                self.scfvalues = []
-
-            self.scfvalues.append([])
-
-            # Try to keep track of the converger (NR, DIIS, SOSCF, etc.).
-            diis_active = True
-            while not line == []:
-
-                if 'Newton-Raphson' in line:
-                    diis_active = False
-                elif 'SOSCF' in line:
-                    diis_active = False
-                elif line[0].isdigit() and diis_active:
-                    energy = float(line[1])
-                    deltaE = float(line[2])
-                    maxDP = float(line[3])
-                    rmsDP = float(line[4])
-                    self.scfvalues[-1].append([deltaE, maxDP, rmsDP])
-                elif line[0].isdigit() and not diis_active:
-                    energy = float(line[1])
-                    deltaE = float(line[2])
-                    maxDP = float(line[5])
-                    rmsDP = float(line[6])
-                    self.scfvalues[-1].append([deltaE, maxDP, rmsDP])
-                line = next(inputfile).split()
-
-        # Read in values for last SCF iteration and scftargets.
-        if "SCF CONVERGENCE" in line:
-            if not hasattr(self, "scfvalues"):
-                self.scfvalues = []
-            if not hasattr(self, "scftargets"):
-                self.scftargets = []
-            dashes = next(inputfile)
-            blank = next(inputfile)
-            line = next(inputfile)
-            assert "Last Energy change" in line
-            deltaE_value = float(line.split()[4])
-            deltaE_target = float(line.split()[7])
-            line = next(inputfile)
-            assert "Last MAX-Density change" in line
-            maxDP_value = float(line.split()[4])
-            maxDP_target = float(line.split()[7])
-            line = next(inputfile)
-            assert "Last RMS-Density change" in line
-            rmsDP_value = float(line.split()[4])
-            rmsDP_target = float(line.split()[7])
-            line = next(inputfile)
-            # Non-DIIS convergers do not contain this line.
-            # assert "Last DIIS Error" in line
-            self.scfvalues[-1].append([deltaE_value, maxDP_value, rmsDP_value])
-            self.scftargets.append([deltaE_target, maxDP_target, rmsDP_target])                
-
-        # SCF energies are printed differently in single point calculations
-        # and in the inner steps of geometry optimizations. However, there is
-        # always a banner announcing the convergence, like this:
+        # Information about the final iteration, which also includes the convergence
+        # targets and the convergence values, is printed separately, in a section like this:
         #
         #       *****************************************************
         #       *                     SUCCESS                       *
         #       *           SCF CONVERGED AFTER   9 CYCLES          *
         #       *****************************************************
+        #
+        # ...
+        #
+        # Total Energy       :         -382.04963064 Eh          -10396.09898 eV
+        #
+        # ...
+        #
+        # -------------------------   ----------------
+        # FINAL SINGLE POINT ENERGY     -382.049630637
+        # -------------------------   ----------------
+        #
+        # We cannot use this last message as a stop condition in general, because
+        # often there is vibrational output before it. So we use the 'Total Energy'
+        # line. However, what comes after that is different for single point calculations
+        # and in the inner steps of geometry optimizations.
         if "SCF CONVERGED AFTER" in line:
-
-            while line[:20] != "Total Energy       :":
-                line = next(inputfile)
 
             if not hasattr(self, "scfenergies"):
                 self.scfenergies = []
+            if not hasattr(self, "scfvalues"):
+                self.scfvalues = []
+            if not hasattr(self, "scftargets"):
+                self.scftargets = []
 
+            while not "Total Energy       :" in line:
+                line = next(inputfile)
             energy = float(line.split()[5])
             self.scfenergies.append(energy)
+
+            self._append_scfvalues_scftargets(inputfile, line)
 
         # Sometimes the SCF does not converge, but does not halt the
         # the run (like in bug 3184890). In this this case, we should
@@ -184,44 +142,111 @@ class ORCA(logfileparser.Logfile):
 
             if not hasattr(self, "scfenergies"):
                 self.scfenergies = []
+            if not hasattr(self, "scfvalues"):
+                self.scfvalues = []
+            if not hasattr(self, "scftargets"):
+                self.scftargets = []
 
             energy = self.scfvalues[-1][-1][0]
             self.scfenergies.append(energy)
 
+            self._append_scfvalues_scftargets(inputfile, line)  
+
+        # The convergence targets for geometry optimizations are printed at the
+        # beginning of the output, although the order and their description is
+        # different than later on. So, try to standardize the names of the criteria
+        # and save them for later so that we can get the order right.
+        #
+        #                        *****************************
+        #                        * Geometry Optimization Run *
+        #                        *****************************
+        #
+        # Geometry optimization settings:
+        # Update method            Update   .... BFGS
+        # Choice of coordinates    CoordSys .... Redundant Internals
+        # Initial Hessian          InHess   .... Almoef's Model
+        #
+        # Convergence Tolerances:
+        # Energy Change            TolE     ....  5.0000e-06 Eh
+        # Max. Gradient            TolMAXG  ....  3.0000e-04 Eh/bohr
+        # RMS Gradient             TolRMSG  ....  1.0000e-04 Eh/bohr
+        # Max. Displacement        TolMAXD  ....  4.0000e-03 bohr
+        # RMS Displacement         TolRMSD  ....  2.0000e-03 bohr
+        #
         if line[25:50] == "Geometry Optimization Run":
+
+            stars = next(inputfile)
+            blank = next(inputfile)
 
             line = next(inputfile)
             while line[0:23] != "Convergence Tolerances:":
                 line = next(inputfile)
 
-            self.geotargets = numpy.zeros((5,), "d")
+            if hasattr(self, 'geotargets'):
+                self.logger.warning('The geotargets attribute should not exist yet. There is a problem in the parser.')
+            self.geotargets = []
+            self.geotargets_names = []
+
+            # There should always be five tolerance values printed here.
             for i in range(5):
                 line = next(inputfile)
-                self.geotargets[i] = float(line.split()[-2])
+                name = line[:25].strip().lower().replace('.','').replace('displacement', 'step')
+                target = float(line.split()[-2])
+                self.geotargets_names.append(name)
+                self.geotargets.append(target)
 
-        #get geometry convergence criteria
+        # After each geometry optimization step, ORCA prints the current convergence
+        # parameters and the targets (again), so it is a good idea to check that they
+        # have not changed. Note that the order of these criteria here are different
+        # than at the beginning of the output, so make use of the geotargets_names created
+        # before and save the new geovalues in correct order.
+        #
+        #          ----------------------|Geometry convergence|---------------------
+        #          Item                value                 Tolerance   Converged
+        #          -----------------------------------------------------------------
+        #          Energy change       0.00006021            0.00000500      NO
+        #          RMS gradient        0.00031313            0.00010000      NO
+        #          RMS step            0.01596159            0.00200000      NO
+        #          MAX step            0.04324586            0.00400000      NO
+        #          ....................................................
+        #          Max(Bonds)      0.0218      Max(Angles)    2.48
+        #          Max(Dihed)        0.00      Max(Improp)    0.00
+        #          -----------------------------------------------------------------
+        #
         if line[33:53] == "Geometry convergence":
+
             if not hasattr(self, "geovalues"):
-                self.geovalues = [ ]
+                self.geovalues = []
             
-            newlist = []
             headers = next(inputfile)
             dashes = next(inputfile)
-            
-            #check if energy change is present (steps > 1)
-            line = next(inputfile)
-            if line.find("Energy change") > 0:
-                newlist.append(float(line.split()[2]))
-                line = next(inputfile)
-            else:
-                newlist.append(0.0)
 
-            #get rest of info
-            for i in range(4):
-                newlist.append(float(line.split()[2]))
+            names = []
+            values = []
+            targets = []
+            line = next(inputfile)
+            while list(set(line.strip())) != ["."]:
+                name = line[10:28].strip().lower()
+                value = float(line.split()[2])
+                target = float(line.split()[3])
+                names.append(name)
+                values.append(value)
+                targets.append(target)
                 line = next(inputfile)
+
+            # The energy change is normally not printed in the first iteration, because
+            # there was no previous energy -- in that case assume zero, but check that
+            # no previous geovalues were parsed.
+            newvalues = []
+            for i, n in enumerate(self.geotargets_names):
+                if (n == "energy change") and (n not in names):
+                    assert len(self.geovalues) == 0
+                    newvalues.append(0.0)
+                else:
+                    newvalues.append(values[names.index(n)])
+                    assert targets[names.index(n)] == self.geotargets[i]
             
-            self.geovalues.append(newlist)
+            self.geovalues.append(newvalues)
 
         #if not an optimization, determine structure used
         if line[0:21] == "CARTESIAN COORDINATES" and not hasattr(self, "atomcoords"):
@@ -273,6 +298,9 @@ class ORCA(logfileparser.Logfile):
             self.atomcoords.append(atomcoords)
             if not hasattr(self, "atomnos"):
                 self.atomnos = numpy.array(atomnos,'i')
+
+        if line[31:61] == "THE OPTIMIZATION HAS CONVERGED":
+            self.optdone = True
 
         if line[21:68] == "FINAL ENERGY EVALUATION AT THE STATIONARY POINT":
             text = next(inputfile)
@@ -342,8 +370,7 @@ class ORCA(logfileparser.Logfile):
 
             self.aooverlaps = numpy.zeros( (self.nbasis, self.nbasis), "d")
             for i in range(0, self.nbasis, 6):
-                if self.progress:
-                    self.updateprogress(inputfile, "Overlap")
+                self.updateprogress(inputfile, "Overlap")
 
                 header = next(inputfile)
                 size = len(header.split())
@@ -372,8 +399,7 @@ class ORCA(logfileparser.Logfile):
                     mocoeffs.append(numpy.zeros((self.nbasis, self.nbasis), "d"))
 
                 for i in range(0, self.nbasis, 6):
-                    if self.progress:
-                        self.updateprogress(inputfile, "Coefficients")
+                    self.updateprogress(inputfile, "Coefficients")
 
                     numbers = next(inputfile)
                     energies = next(inputfile)
@@ -433,7 +459,14 @@ class ORCA(logfileparser.Logfile):
                 self.etsecs.append(sec)
                 line = next(inputfile)
 
-        if line[25:44] == "ABSORPTION SPECTRUM":
+        # This will parse etoscs for TD calculations, but note that ORCA generally
+        # prints two sets, one based on the length form of transition dipole moments,
+        # the other based on the velocity form. Although these should be identical
+        # in the basis set limit, in practice they are rarely the same. Here we will
+        # effectively parse just the spectrum based on the length-form.
+        if (line[25:44] == "ABSORPTION SPECTRUM" or \
+                line[9:28] == "ABSORPTION SPECTRUM") and not hasattr(self,
+                                                                    "etoscs"):
             minus = next(inputfile)
             header = next(inputfile)
             header = next(inputfile)
@@ -457,6 +490,51 @@ class ORCA(logfileparser.Logfile):
                 line = next(inputfile)
                 self.vibfreqs[i] = float(line.split()[1])
 
+            if numpy.any(self.vibfreqs[0:6] != 0):
+                msg = "Modes corresponding to rotations/translations "
+                msg += "may be non-zero."
+                self.logger.warning(msg)
+
+            self.vibfreqs = self.vibfreqs[6:]
+
+        if line[0:12] == "NORMAL MODES":
+            """ Format:
+            NORMAL MODES
+            ------------
+
+            These modes are the cartesian displacements weighted by the diagonal matrix
+            M(i,i)=1/sqrt(m[i]) where m[i] is the mass of the displaced atom
+            Thus, these vectors are normalized but *not* orthogonal
+
+                              0          1          2          3          4          5    
+                  0       0.000000   0.000000   0.000000   0.000000   0.000000   0.000000
+                  1       0.000000   0.000000   0.000000   0.000000   0.000000   0.000000
+                  2       0.000000   0.000000   0.000000   0.000000   0.000000   0.000000
+            ...
+            """
+
+            self.vibdisps = numpy.zeros(( 3 * self.natom, self.natom, 3), "d")
+
+            dashes = next(inputfile)
+            blank = next(inputfile)
+            text = next(inputfile)
+            text = next(inputfile)
+            text = next(inputfile)
+            blank = next(inputfile)
+
+            for mode in range(0, 3 * self.natom, 6):
+                header = next(inputfile)
+                for atom in range(self.natom):
+                    x = next(inputfile).split()[1:]
+                    y = next(inputfile).split()[1:]
+                    z = next(inputfile).split()[1:]
+
+                    self.vibdisps[mode:mode + 6, atom, 0] = x
+                    self.vibdisps[mode:mode + 6, atom, 1] = y
+                    self.vibdisps[mode:mode + 6, atom, 2] = z
+
+            self.vibdisps = self.vibdisps[6:]
+
         if line[0:11] == "IR SPECTRUM":
             dashes = next(inputfile)
             blank = next(inputfile)
@@ -471,6 +549,8 @@ class ORCA(logfileparser.Logfile):
                 self.vibirs[num] = float(line.split()[2])
                 line = next(inputfile)
 
+            self.vibirs = self.vibirs[6:]
+
         if line[0:14] == "RAMAN SPECTRUM":
             dashes = next(inputfile)
             blank = next(inputfile)
@@ -484,6 +564,8 @@ class ORCA(logfileparser.Logfile):
                 num = int(line[0:4])
                 self.vibramans[num] = float(line.split()[2])
                 line = next(inputfile)
+
+            self.vibramans = self.vibramans[6:]
 
         # ORCA will print atomic charges along with the spin populations,
         #   so care must be taken about choosing the proper column.
@@ -551,6 +633,148 @@ class ORCA(logfileparser.Logfile):
             if has_spins:
                 self.atomspins["lowdin"] = spins
 
+    def parse_scf_condensed_format(self, inputfile, line):
+        """ Parse the SCF convergence information in condensed format """
+
+        # This is what it looks like
+        # ITER       Energy         Delta-E        Max-DP      RMS-DP      [F,P]     Damp
+        #                ***  Starting incremental Fock matrix formation  ***
+        #   0   -384.5203638934   0.000000000000 0.03375012  0.00223249  0.1351565 0.7000
+        #   1   -384.5792776162  -0.058913722842 0.02841696  0.00175952  0.0734529 0.7000
+        #                                ***Turning on DIIS***
+        #   2   -384.6074211837  -0.028143567475 0.04968025  0.00326114  0.0310435 0.0000
+        #   3   -384.6479682063  -0.040547022616 0.02097477  0.00121132  0.0361982 0.0000
+        #   4   -384.6571124353  -0.009144228947 0.00576471  0.00035160  0.0061205 0.0000
+        #   5   -384.6574659959  -0.000353560584 0.00191156  0.00010160  0.0025838 0.0000
+        #   6   -384.6574990782  -0.000033082375 0.00052492  0.00003800  0.0002061 0.0000
+        #   7   -384.6575005762  -0.000001497987 0.00020257  0.00001146  0.0001652 0.0000
+        #   8   -384.6575007321  -0.000000155848 0.00008572  0.00000435  0.0000745 0.0000
+        #          **** Energy Check signals convergence ****
+
+        assert line[2] == "Delta-E"
+        assert line[3] == "Max-DP"
+
+        if not hasattr(self, "scfvalues"):
+            self.scfvalues = []
+
+        self.scfvalues.append([])
+
+        # Try to keep track of the converger (NR, DIIS, SOSCF, etc.).
+        diis_active = True
+        while not line == []:
+
+            if 'Newton-Raphson' in line:
+                diis_active = False
+            elif 'SOSCF' in line:
+                diis_active = False
+            elif line[0].isdigit() and diis_active:
+                energy = float(line[1])
+                deltaE = float(line[2])
+                maxDP = float(line[3])
+                rmsDP = float(line[4])
+                self.scfvalues[-1].append([deltaE, maxDP, rmsDP])
+            elif line[0].isdigit() and not diis_active:
+                energy = float(line[1])
+                deltaE = float(line[2])
+                maxDP = float(line[5])
+                rmsDP = float(line[6])
+                self.scfvalues[-1].append([deltaE, maxDP, rmsDP])
+            line = next(inputfile).split()
+
+    def parse_scf_expanded_format(self, inputfile, line):
+        """ Parse SCF convergence when in expanded format. """
+
+
+# The following is an example of the format
+# -----------------------------------------
+#
+#               ***  Starting incremental Fock matrix formation  ***
+#
+#                         ----------------------------
+#                         !        ITERATION     0   !
+#                         ----------------------------
+#   Total Energy        :    -377.960836651297 Eh
+#   Energy Change       :    -377.960836651297 Eh
+#   MAX-DP              :       0.100175793695
+#   RMS-DP              :       0.004437973661
+#   Actual Damping      :       0.7000
+#   Actual Level Shift  :       0.2500 Eh
+#   Int. Num. El.       :    43.99982197 (UP=   21.99991099 DN=   21.99991099)
+#   Exchange            :   -34.27550826
+#   Correlation         :    -2.02540957
+#
+#
+#                         ----------------------------
+#                         !        ITERATION     1   !
+#                         ----------------------------
+#   Total Energy        :    -378.118458080109 Eh
+#   Energy Change       :      -0.157621428812 Eh
+#   MAX-DP              :       0.053240648588
+#   RMS-DP              :       0.002375092508
+#   Actual Damping      :       0.7000
+#   Actual Level Shift  :       0.2500 Eh
+#   Int. Num. El.       :    43.99994143 (UP=   21.99997071 DN=   21.99997071)
+#   Exchange            :   -34.00291075
+#   Correlation         :    -2.01607243
+#
+#                               ***Turning on DIIS***
+#
+#                         ----------------------------
+#                         !        ITERATION     2   !
+#                         ----------------------------
+# ....
+#
+        if not hasattr(self, "scfvalues"):
+            self.scfvalues = []
+
+        self.scfvalues.append([])
+
+        line = "Foo" # dummy argument to enter loop
+        while line.find("******") < 0:
+            line = next(inputfile)
+            info = line.split()
+            if len(info) > 1 and info[1] == "ITERATION":
+                dashes = next(inputfile)
+                energy_line = next(inputfile).split()
+                energy = float(energy_line[3])
+                deltaE_line = next(inputfile).split()
+                deltaE = float(deltaE_line[3])
+                if energy == deltaE:
+                    deltaE = 0
+                maxDP_line = next(inputfile).split()
+                maxDP = float(maxDP_line[2])
+                rmsDP_line = next(inputfile).split()
+                rmsDP = float(rmsDP_line[2])
+                self.scfvalues[-1].append([deltaE, maxDP, rmsDP])
+
+        return
+
+    # end of parse_scf_expanded_format
+
+    def _append_scfvalues_scftargets(self, inputfile, line):
+        # The SCF convergence targets are always printed after this, but apparently
+        # not all of them always -- for example the RMS Density is missing for geometry
+        # optimization steps. So, assume the previous value is still valid if it is
+        # not found. For additional certainty, assert that the other targets are unchanged.
+        while not "Last Energy change" in line:
+            line = next(inputfile)
+        deltaE_value = float(line.split()[4])
+        deltaE_target = float(line.split()[7])
+        line = next(inputfile)
+        if "Last MAX-Density change" in line:
+            maxDP_value = float(line.split()[4])
+            maxDP_target = float(line.split()[7])
+            line = next(inputfile)
+            if "Last RMS-Density change" in line:
+                rmsDP_value = float(line.split()[4])
+                rmsDP_target = float(line.split()[7])
+            else:
+                rmsDP_value = self.scfvalues[-1][-1][2]
+                rmsDP_target = self.scftargets[-1][2]
+                assert deltaE_target == self.scftargets[-1][0]
+                assert maxDP_target == self.scftargets[-1][1]
+            self.scfvalues[-1].append([deltaE_value, maxDP_value, rmsDP_value])
+            self.scftargets.append([deltaE_target, maxDP_target, rmsDP_target])
 
 if __name__ == "__main__":
     import sys

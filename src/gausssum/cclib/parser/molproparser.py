@@ -1,14 +1,12 @@
 # This file is part of cclib (http://cclib.sf.net), a library for parsing
 # and interpreting the results of computational chemistry packages.
 #
-# Copyright (C) 2007, the cclib development team
+# Copyright (C) 2007-2014, the cclib development team
 #
 # The library is free software, distributed under the terms of
 # the GNU Lesser General Public version 2.1 or later. You should have
 # received a copy of the license along with cclib. You can also access
 # the full license online at http://www.gnu.org/copyleft/lgpl.html.
-
-__revision__ = "$Revision: 1043 $"
 
 import numpy
 
@@ -43,13 +41,16 @@ class Molpro(logfileparser.Logfile):
 
     def after_parsing(self):
     
-        # If optimization thresholds are default, they are normally not printed.
+        # If optimization thresholds are default, they are normally not printed and we need
+        # to set them to the default after parsing. Make sure to set them in the same order that
+        # they appear in the in the geometry optimization progress printed in the output,
+        # namely: energy difference, maximum gradient, maximum step.
         if not hasattr(self, "geotargets"):
             self.geotargets = []        
-            # Default THRGRAD (required accuracy of the optimized gradient).
-            self.geotargets.append(3E-4)
             # Default THRENERG (required accuracy of the optimized energy).
             self.geotargets.append(1E-6)
+            # Default THRGRAD (required accuracy of the optimized gradient).
+            self.geotargets.append(3E-4)
             # Default THRSTEP (convergence threshold for the geometry optimization step).
             self.geotargets.append(3E-4)
 
@@ -238,7 +239,8 @@ class Molpro(logfileparser.Logfile):
             self.scfvalues.append(numpy.array(scfvalues))
 
         # SCF result - RHF/UHF and DFT (RKS) energies.
-        if line[1:5] in ["!RHF", "!UHF", "!RKS"] and line[16:22] == "ENERGY":
+        if (line[1:5] in ["!RHF", "!UHF", "!RKS"] and
+            line[16:22].lower() == "energy"):
             
             if not hasattr(self, "scfenergies"):
                 self.scfenergies = []
@@ -386,8 +388,17 @@ class Molpro(logfileparser.Logfile):
             else:
                 self.moenergies.append([])
                 self.mocoeffs.append([])
-                
-            while line.strip() and not "ORBITALS" in line:
+
+            # This loop will keep going until there is a double blank line, because
+            # there is a single line between each coefficient block. We can also check
+            # whether there are stars (there are, at the end), in case something goes wrong.
+            while line.strip() and (not "ORBITALS" in line) and (not set(line.strip()) == {'*'}):
+
+                # Newer version of Molpro (for example, 2012 test files) wil print some
+                # more things here, such as HOMO and LUMO, but these have less than 10 columns.
+                if len(line.split()) < 10 or "HOMO" in line or "LUMO" in line:
+                    break
+
                 coeffs = []
                 while line.strip() != "":
                     if line[:30].strip():
@@ -472,24 +483,36 @@ class Molpro(logfileparser.Logfile):
 
             self.geotargets = [optenerg, optgrad, optstep]
 
+        if line[1:30] == "END OF GEOMETRY OPTIMIZATION.":
+            self.optdone = True
+
         # The optimization history is the source for geovlues:
+        #
         #   END OF GEOMETRY OPTIMIZATION.    TOTAL CPU:       246.9 SEC
         #
         #     ITER.   ENERGY(OLD)    ENERGY(NEW)      DE          GRADMAX     GRADNORM    GRADRMS     STEPMAX     STEPLEN     STEPRMS
         #      1  -382.02936898  -382.04914450    -0.01977552  0.11354875  0.20127947  0.01183997  0.12972761  0.20171740  0.01186573
         #      2  -382.04914450  -382.05059234    -0.00144784  0.03299860  0.03963339  0.00233138  0.05577169  0.06687650  0.00393391
         #      3  -382.05059234  -382.05069136    -0.00009902  0.00694359  0.01069889  0.00062935  0.01654549  0.02016307  0.00118606
-        #      4  -382.05069136  -382.05069130     0.00000006  0.00295497  0.00363023  0.00021354  0.00234307  0.00443525  0.00026090
-        #      5  -382.05069130  -382.05069206    -0.00000075  0.00098220  0.00121031  0.00007119  0.00116863  0.00140452  0.00008262
-        #      6  -382.05069206  -382.05069209    -0.00000003  0.00011350  0.00022306  0.00001312  0.00013321  0.00024526  0.00001443
-        if line[1:30] == "END OF GEOMETRY OPTIMIZATION.":
+        # ...
+        #
+        # The above is an exerpt from Molpro 2006, but it is a little bit different
+        # for Molpro 2012, namely the 'END OF GEOMETRY OPTIMIZATION occurs after the
+        # actual history list. It seems there is a another consistent line before the
+        # history, but this might not be always true -- so this is a potential weak link.
+        if line[1:30] == "END OF GEOMETRY OPTIMIZATION." or line.strip() == "Quadratic Steepest Descent - Minimum Search":
             
             blank = next(inputfile)
             headers = next(inputfile)
 
+            # Newer version of Molpro (at least for 2012) print and additional column
+            # with the timing information for each step. Otherwise, the history looks the same.
+            headers = headers.split()
+            if not len(headers) in (10,11):
+                return
+
             # Although criteria can be changed, the printed format should not change.
             # In case it does, retrieve the columns for each parameter.
-            headers = headers.split()
             index_THRENERG = headers.index('DE')
             index_THRGRAD = headers.index('GRADMAX')
             index_THRSTEP = headers.index('STEPMAX')
@@ -497,7 +520,7 @@ class Molpro(logfileparser.Logfile):
             line = next(inputfile)
             self.geovalues = []            
             while line.strip() != "":
-                
+
                 line = line.split()
                 geovalues = []
                 geovalues.append(float(line[index_THRENERG]))
@@ -505,6 +528,8 @@ class Molpro(logfileparser.Logfile):
                 geovalues.append(float(line[index_THRSTEP]))
                 self.geovalues.append(geovalues)
                 line = next(inputfile)
+                if line.strip() == "Freezing grid":
+                    line = next(inputfile)
 
         # This block should look like this:
         #   Normal Modes
@@ -639,6 +664,40 @@ class Molpro(logfileparser.Logfile):
             while line.strip():
                 line = next(inputfile)
                 self.amass += list(map(float, line.strip().split()[2:]))        
+
+        #1PROGRAM * POP (Mulliken population analysis)
+        #
+        #
+        # Density matrix read from record         2100.2  Type=RHF/CHARGE (state 1.1)
+        # 
+        # Population analysis by basis function type
+        #
+        # Unique atom        s        p        d        f        g    Total    Charge
+        #   2  C       3.11797  2.88497  0.00000  0.00000  0.00000  6.00294  - 0.00294
+        #   3  C       3.14091  2.91892  0.00000  0.00000  0.00000  6.05984  - 0.05984
+        # ...
+        if line.strip() == "1PROGRAM * POP (Mulliken population analysis)":
+
+            blank = next(inputfile)
+            blank = next(inputfile)
+            density_source = next(inputfile)
+            blank = next(inputfile)
+            function_type_comment = next(inputfile)
+            blank = next(inputfile)
+
+            header = next(inputfile)
+            icharge = header.split().index('Charge')
+
+            charges = []
+            line = next(inputfile)
+            while line.strip():
+                cols = line.split()
+                charges.append(float(cols[icharge]+cols[icharge+1]))
+                line = next(inputfile)
+
+            if not hasattr(self, "atomcharges"):
+                self.atomcharges = {}
+            self.atomcharges['mulliken'] = charges
 
 
 if __name__ == "__main__":

@@ -1,15 +1,14 @@
 # This file is part of cclib (http://cclib.sf.net), a library for parsing
 # and interpreting the results of computational chemistry packages.
 #
-# Copyright (C) 2006, the cclib development team
+# Copyright (C) 2006-2014, the cclib development team
 #
 # The library is free software, distributed under the terms of
 # the GNU Lesser General Public version 2.1 or later. You should have
 # received a copy of the license along with cclib. You can also access
 # the full license online at http://www.gnu.org/copyleft/lgpl.html.
 
-__revision__ = "$Revision: 1063 $"
-
+from __future__ import print_function
 import re
 
 import numpy
@@ -57,7 +56,6 @@ class GAMESS(logfileparser.Logfile):
     def before_parsing(self):
 
         self.firststdorient = True # Used to decide whether to wipe the atomcoords clean
-        self.geooptfinished = False # Used to avoid extracting the final geometry twice
         self.cihamtyp = "none" # Type of CI Hamiltonian: saps or dets.
         self.scftype = "none" # Type of SCF calculation: BLYP, RHF, ROHF, etc.
     
@@ -231,12 +229,20 @@ class GAMESS(logfileparser.Logfile):
         if line[1:50] == "TRANSITION FROM THE GROUND STATE TO EXCITED STATE":
             if not hasattr(self, "etoscs"):
                 self.etoscs = []
-            statenumber = int(line.split()[-1])
-            # skip 7 lines
-            for i in range(8):
-                line = next(inputfile)
-            strength = float(line.split()[3])
-            self.etoscs.append(strength)
+
+            # This was the suggested as a fix in issue #61, and it does allow
+            # the parser to finish without crashing. However, it seems that
+            # etoscs is shorter in this case than the other transition attributes,
+            # so that should be somehow corrected and tested for.
+            if "OPTICALLY" in line:
+                pass
+            else:
+                statenumber = int(line.split()[-1])
+                # skip 7 lines
+                for i in range(8):
+                    line = next(inputfile)
+                strength = float(line.split()[3])
+                self.etoscs.append(strength)
 
         # TD-DFT for GAMESS-US.
         # The format for excitations has changed a bit between 2007 and 2012.
@@ -295,8 +301,7 @@ class GAMESS(logfileparser.Logfile):
             line = next(inputfile)
             while line[1:6] == "STATE":
 
-                if self.progress:
-                    self.updateprogress(inputfile, "Excited States")
+                self.updateprogress(inputfile, "Excited States")
 
                 etenergy = utils.convertor(float(line.split()[-2]), "eV", "cm-1")
                 etoscs = float(next(inputfile).split()[-1])
@@ -403,16 +408,15 @@ class GAMESS(logfileparser.Logfile):
 
         if line[12:40] == "EQUILIBRIUM GEOMETRY LOCATED":
             # Prevent extraction of the final geometry twice
-            self.geooptfinished = True
+            self.optdone = True
         
-        if line[1:29] == "COORDINATES OF ALL ATOMS ARE" and not self.geooptfinished:
+        if line[1:29] == "COORDINATES OF ALL ATOMS ARE" and not self.optdone:
             # This is the standard orientation, which is the only coordinate
             # information available for all geometry optimisation cycles.
             # The input orientation will be overwritten if this is a geometry optimisation
             # We assume that a previous Input Orientation has been found and
             # used to extract the atomnos
-            if self.progress:
-                self.updateprogress(inputfile, "Coordinates")
+            self.updateprogress(inputfile, "Coordinates")
 
             if self.firststdorient:
                 self.firststdorient = False
@@ -460,8 +464,7 @@ class GAMESS(logfileparser.Logfile):
 
             while line [:5] != " ITER":
 
-                if self.progress:
-                    self.updateprogress(inputfile, "Attributes")
+                self.updateprogress(inputfile, "Attributes")
 
                 # GVB uses SQCDF for checking convergence (for example in exam17).
                 if "GVB" in self.scftype and "SQCDF TOL=" in line:
@@ -587,8 +590,7 @@ class GAMESS(logfileparser.Logfile):
             # a list of atomic weights and some possible warnings.
             # Pass the warnings to the logger if they are there.
             while not "MODES" in line:
-                if self.progress:
-                    self.updateprogress(inputfile, "Frequency Information")
+                self.updateprogress(inputfile, "Frequency Information")
 
                 line = next(inputfile)
                 if "THIS IS NOT A STATIONARY POINT" in line:
@@ -619,8 +621,7 @@ class GAMESS(logfileparser.Logfile):
                 line = next(inputfile)
 
             while not "SAYVETZ" in line:
-                if self.progress:
-                    self.updateprogress(inputfile, "Frequency Information")
+                self.updateprogress(inputfile, "Frequency Information")
 
                 # Note: there may be imaginary frequencies like this (which we make negative):
                 #       FREQUENCY:       825.18 I    111.53       12.62       10.70        0.89
@@ -802,8 +803,7 @@ class GAMESS(logfileparser.Logfile):
             dashes = next(inputfile)
             for base in range(0, self.nmo, 5):
 
-                if self.progress:
-                    self.updateprogress(inputfile, "Coefficients")
+                self.updateprogress(inputfile, "Coefficients")
 
                 line = next(inputfile)
                 # Make sure that this section does not end prematurely - checked by regression test 2CO.ccsd.aug-cc-pVDZ.out.
@@ -903,8 +903,7 @@ class GAMESS(logfileparser.Logfile):
                 for i in range(4):
                     line = next(inputfile)
                 for base in range(0, self.nmo, 5):
-                    if self.progress:
-                        self.updateprogress(inputfile, "Coefficients")
+                    self.updateprogress(inputfile, "Coefficients")
 
                     blank = next(inputfile)
                     line = next(inputfile) # Eigenvector no
@@ -1021,8 +1020,7 @@ class GAMESS(logfileparser.Logfile):
                 self.logger.info("Reading additional aooverlaps...")
             base = 0
             while base < self.nbasis:
-                if self.progress:
-                    self.updateprogress(inputfile, "Overlap")
+                self.updateprogress(inputfile, "Overlap")
 
                 blank = next(inputfile)
                 line = next(inputfile) # Basis fn number
