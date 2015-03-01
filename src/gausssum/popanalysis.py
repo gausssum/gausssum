@@ -16,7 +16,6 @@ import string
 import os
 import sys
 import numpy
-import numpy.oldnumeric as Numeric
 from math import exp, log
 from .plot import DisplayPlot
 from .mpl import MPLPlot
@@ -318,7 +317,7 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin):
                     ao_a = groups.groups[groupnames[groupa]]
                     for groupb in range(1, numgroups):
                         ao_b = groups.groups[groupnames[groupb]]
-                        lap = sum(Numeric.take(Numeric.take(kcoop,ao_a),
+                        lap = sum(numpy.take(numpy.take(kcoop,ao_a),
                                                ao_b,axis=1).ravel())
 
                         groupoverlap[j][k,groupa,groupb] = lap
