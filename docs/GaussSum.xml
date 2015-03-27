@@ -13,8 +13,8 @@
 <!ENTITY scfgeoopt SYSTEM "scfgeoopt.xml">
 <!ENTITY automate SYSTEM "automate.xml">
 <!ENTITY DOS SYSTEM "DOS.xml">
-<!ENTITY version "3.1">
-<!ENTITY pointversion "3.1.0">
+<!ENTITY version "3.0">
+<!ENTITY pointversion "3.0.1">
 ]>
 
 <book>
