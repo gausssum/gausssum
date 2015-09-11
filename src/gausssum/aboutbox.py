@@ -69,12 +69,12 @@ class AboutPopupBox(tkinter.simpledialog.Dialog):
         Label(master,text="Support GaussSum by citing:").pack(side=TOP)
         Label(master,text="N.M. O'Boyle, A.L. Tenderholt and K.M. Langner.",font=("Times",10,"bold")).pack(side=TOP)
         Label(master,text="J. Comp. Chem. 2008, 29, 839-845.",font=("Times",10,"bold")).pack(side=TOP)
-        #Button(master,text="GaussSum home page on SourceForge",command=self.openmybrowser).pack(side=TOP)
-        Label(master,text="").pack(side=TOP) # Creates a bit of spacing at the bottom
+        # Label(master,text="").pack(side=TOP) # Creates a bit of spacing at the bottom
 
-        x = (652-354)//2 + self.parent.winfo_rootx() # Popup is 354x389
-        y = (480-405)//2 + self.parent.winfo_rooty()
-        self.geometry("354x405+"+str(x)+"+"+str(y)) # Place it in the centre of the root window
+        width, height = 354, 455
+        x = (652-width)//2 + self.parent.winfo_rootx()
+        y = (480-height)//2 + self.parent.winfo_rooty()
+        self.geometry("%dx%d+%d+%d" % (width, height, x, y)) # Place it in the centre of the root window
 
     def openmybrowser(self): # New
         webbrowser.open("http://gausssum.sf.net")
