@@ -63,7 +63,7 @@ class AboutPopupBox(tkinter.simpledialog.Dialog):
         self.photo2 = PhotoImage(file=os.path.join(installlocation,"mesh.gif"))
         self.item2 = self.canvas2.create_image(11,11,anchor=NW,image=self.photo2)
 
-        Label(master,text="(c) 2015 Noel O'Boyle").pack(side=TOP)
+        Label(master,text="(c) 2006-2016 Noel O'Boyle").pack(side=TOP)
         Label(master,text="http://gausssum.sf.net").pack(side=TOP)
         Label(master,text="").pack(side=TOP) # Creates a bit of spacing at the bottom
         Label(master,text="Support GaussSum by citing:").pack(side=TOP)
