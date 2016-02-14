@@ -52,6 +52,7 @@
 <listitem><para>Update in parsing library (to cclib 1.3.1+) adding support for several additional computational chemistry packages</para></listitem>
 <listitem><para>Avoid use of deprecated "oldnumeric" numpy module (Clyde Fare, Erlendur Jónsson)</para></listitem>
 <listitem><para>Correct name of output folder to gausssum3 (Angelo Rossi)</para></listitem>
+<listitem><para>Correct the size of the About box (Daniel Liedert)</para></listitem>
 </itemizedlist>
 
 <para>Release Notes for Version 3.0:</para>
