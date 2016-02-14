@@ -178,7 +178,8 @@ def test_MO_contribs():
             assert line[0:4] == mos[:4]
             print(line[4:6])
             print(mocontribs[:2])
-            assert line[4:6] == mocontribs[:2]
+            assert line[4:6] == mocontribs[:2] # Currently fails - need to move
+            # to a system when the Groups.txt is an ordered dictionary
             if unres:
                 assert line[8:12] == mos[4:]
                 assert line[12:14] == mocontribs[2:]
