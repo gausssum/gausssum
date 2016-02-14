@@ -47,7 +47,7 @@
 			</itemizedlist>
 
 
-<para>Release Notes for Version 3.1:</para>
+<para>Release Notes for Version 3.0.1:</para>
 <itemizedlist>
 <listitem><para>Update in parsing library (to cclib 1.3.1+) adding support for several additional computational chemistry packages</para></listitem>
 <listitem><para>Avoid use of deprecated "oldnumeric" numpy module (Clyde Fare, Erlendur Jónsson)</para></listitem>
