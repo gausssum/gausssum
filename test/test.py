@@ -15,8 +15,8 @@ root = tkinter.Tk()
 from gausssum.electrontrans import ET
 from gausssum.popanalysis import Popanalysis
 from gausssum.vibfreq import Vibfreq, get_scaling_factors
-from gausssum.cclib.parser import ccopen
-from gausssum.cclib.parser.utils import convertor
+from cclib.parser import ccopen
+from cclib.parser.utils import convertor
 from gausssum.utils import Groups
 
 def clearoutput(filename):
