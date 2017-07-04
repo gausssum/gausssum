@@ -23,7 +23,7 @@ import configparser     # For writing the settings to an .ini file
 import logging
 import glob
 
-from gausssum.cclib.parser import ADF, GAMESS, Gaussian, ccopen
+from cclib.parser import ADF, GAMESS, Gaussian, ccopen
 from gausssum.preferencesbox import PreferencesPopupBox
 from gausssum.aboutbox import AboutPopupBox
 from gausssum.popanalysis import Popanalysis

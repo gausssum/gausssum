@@ -15,7 +15,7 @@
 from tkinter import *
 import configparser     # For writing the settings to an .ini file
 
-from gausssum.cclib.parser.utils import PeriodicTable
+from cclib.parser.utils import PeriodicTable
 
 import numpy
 
