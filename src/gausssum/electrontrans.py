@@ -20,7 +20,7 @@ import numpy
 import glob
 
 from gausssum.utils import GaussianSpectrum, levelname, percent
-from gausssum.cclib.parser.utils import convertor
+from cclib.parser.utils import convertor
 
 # from Tkinter import *
 from .mpl import MPLPlot

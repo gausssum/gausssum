@@ -18,7 +18,7 @@ import tkinter.simpledialog
 import traceback
 import copy             # For deepcopy...until I find a better way of doing this
 
-from gausssum.cclib.parser import ADF, GAMESS, Gaussian
+from cclib.parser import ADF, GAMESS, Gaussian
 import os, sys
 if hasattr(sys, "frozen"): # i.e. if using py2exe
     installlocation = os.path.dirname(sys.executable)
