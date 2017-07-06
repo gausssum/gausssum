@@ -24,6 +24,12 @@ from gausssum.utils import levelname
 from gausssum.utils import GaussianSpectrum
 from gausssum.utils import Groups
 
+def repr_of_evalue(evalue):
+    if numpy.isnan(evalue):
+        return "-"
+    else:
+        return "%.2f" % evalue
+
 def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin):
 
     def DOSconvolute(orb_MPA,evalue):
@@ -140,14 +146,14 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin):
         outputfile.write("\n")
 
         for i in range(max([len(x) for x in evalue])-1,-1,-1): # Print them out backwards
-            line=str(i+1)+"\t"+levelname(i, HOMO[0])+"\t"+str(round(evalue[0][i],2))+"\t"+symmetry[0][i]
+            line=str(i+1)+"\t"+levelname(i, HOMO[0])+"\t"+repr_of_evalue(evalue[0][i])+"\t"+symmetry[0][i]
             if groups and pop:
                 for j in range(len(groups.groups)):
                     line=line+"\t"+str(int(MPA[0][i,j]*100+.5))
                 for j in range(len(groups.groups)):
                     line=line+"\t"+str(MPA[0][i,j])
             if unres and i<len(evalue[1]):
-                line=line+"\t"+str(i+1)+"\t"+levelname(i, HOMO[1])+"\t"+str(round(evalue[1][i],2))+"\t"+symmetry[1][i]
+                line=line+"\t"+str(i+1)+"\t"+levelname(i, HOMO[1])+"\t"+repr_of_evalue(evalue[1][i])+"\t"+symmetry[1][i]
                 if groups and pop:
                     for j in range(len(groups.groups)):
                         line=line+"\t"+str(int(MPA[1][i,j]*100+.5))
