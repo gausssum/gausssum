@@ -12,6 +12,12 @@
 # WITHOUT ANY WARRANTY, without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
+import os
+import sys
+if getattr(sys, 'frozen', False):
+    # frozen
+    here = os.path.dirname(sys.executable)
+    os.chdir(here)
 
 from tkinter import *   # GUI stuff
 import gausssum.gausssumgui
