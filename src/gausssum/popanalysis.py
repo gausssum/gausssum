@@ -35,10 +35,17 @@ def Popanalysis(root,screen,logfile,logfilename,start,end,COOP,FWHM,makeorigin):
     def DOSconvolute(orb_MPA,evalue):
         """Convolute the DOS spectrum"""
 
-        heights =[x for x in numpy.swapaxes(orb_MPA,0,1)]
+        heights = [x for x in numpy.swapaxes(orb_MPA,0,1)]
+
+        # Remove any NAN eigenvalues from the convolution
+        not_nans = ~numpy.isnan(evalue)
+        nevalue = evalue[not_nans]
+        nheights = []
+        for h in heights:
+            nheights.append(h[not_nans])
 
         spectrum = GaussianSpectrum(start, end, 1000,
-                                    (evalue, heights),
+                                    (nevalue, nheights),
                                     FWHM)
         return spectrum
 
