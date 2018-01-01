@@ -219,10 +219,22 @@ def test_groups():
 
             assert groups.groups == ans
 
+def test_asterisks_for_eigenvalues():
+    if not os.path.isdir("testfiles"): return
+    filename = os.path.join("testfiles", "asterisks", "PbI3-PBE-DZP.log.gz")
+    gd = gaussdir(filename)
+    clearoutput(filename)
+    data = parse(filename)
 
+    Popanalysis(None, sys.stdout, data, filename, -20, 0, False, 0.3, False)
+
+    with open(os.path.join(gd, "DOS_spectrum.txt"), "r") as f:
+        header = next(f)
+        for line in f:
+            broken = line.rstrip().split()
+            assert broken[1] != "nan"
 
 if __name__ == "__main__":
-
     if len(sys.argv) == 2:
         filename = sys.argv[1]
         runone(filename)
