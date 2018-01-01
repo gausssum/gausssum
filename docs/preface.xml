@@ -46,6 +46,13 @@
 				</listitem>
 			</itemizedlist>
 
+<para>Release Notes for Version 3.0.2:</para>
+<itemizedlist>
+<listitem><para>Update in parsing library (to cclib 1.5)</para></listitem>
+<listitem><para>No longer include cclib as part of the GaussSum source distribution</para></listitem>
+<listitem><para>Create a DOS spectrum even where one or more eigen values are "nan" (e.g. asterisks in a Gaussian output file). Such values are simply ignored.</para></listitem>
+<listitem><para>Correct the size of the About box (Daniel Liedert)</para></listitem>
+</itemizedlist>
 
 <para>Release Notes for Version 3.0.1:</para>
 <itemizedlist>

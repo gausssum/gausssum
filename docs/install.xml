@@ -19,7 +19,7 @@
 					&gs; requires &py;, which is a programming language commonly used for scripting.
 				</para>
 				<para>
-					Go to the <ulink url="http://www.python.org/download/releases">Python install page</ulink>. Download and run the Windows installer for a recent version of Python 3 (e.g. Python 3.3.2). Install it into something like <filename>C:\Python3.3</filename>. &gs; also works well with Python 3.1 and 3.2.
+					Go to the <ulink url="https://www.python.org/downloads">Python install page</ulink>. Download and run the Windows installer for a recent version of Python 3 (e.g. Python 3.3.2). Install it into something like <filename>C:\Python3.3</filename>. &gs; also works well with Python 3.1 and 3.2.
 				</para>
 			</sect2>
 			<sect2 id="WinNumpy" xreflabel="Installing Numpy">

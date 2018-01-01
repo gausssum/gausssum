@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-"file:///usr/share/sgml/docbook/xml-dtd-4.2/docbookx.dtd" [
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"file:///usr/share/sgml/docbook/xml-dtd-4.5/docbookx.dtd" [
 <!ENTITY gs "<application>GaussSum</application>">
 <!ENTITY py "Python">
 <!ENTITY gp "Gnuplot">
@@ -14,7 +14,7 @@
 <!ENTITY automate SYSTEM "automate.xml">
 <!ENTITY DOS SYSTEM "DOS.xml">
 <!ENTITY version "3.0">
-<!ENTITY pointversion "3.0.1">
+<!ENTITY pointversion "3.0.2">
 ]>
 
 <book>
@@ -26,15 +26,15 @@
 	&preface;
 
 	&install;
-	
+
 	&find;
-	
+
 	&scfgeoopt;
-	
+
 	&ir_raman;
-	
+
 	&DOS;
-	
+
 	&uv_vis;
 
     &automate;
