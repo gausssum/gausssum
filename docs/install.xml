@@ -1,12 +1,12 @@
 	<chapter>
 		<title>Installation</title>
 		<para>
-  This chapter describes how to install and run &gs; on computers running Windows or Linux. Note that there are two choices for installing in Windows. One is to install an all-in-one bundle of Python/Numpy/Matplotlib/GaussSum (the easier method), the other is to install the &gs; sources and the required libraries separately.
+			This chapter describes how to install and run &gs; on computers running Windows or Linux. Note that there are two choices for installing in Windows. One is to install an all-in-one bundle of Python/Numpy/Matplotlib/cclib/GaussSum (the easier method), the other is to install the &gs; sources and the required libraries separately.
 		</para>
 
 		<section id="WinInstall" xreflabel="Using the all-in-one installer on Windows">
 			<title>Installing an all-in-one bundle on Windows</title>
-			<para>Download the quite large all-in-one bundle from <ulink url="http://prdownloads.sourceforge.net/gausssum/GaussSum-&pointversion;.msi?download">here</ulink>. Doubleclick on the .msi file to install it into something like <filename>C:\Program Files (x86)\GaussSum</filename>. A shortcut will be added to the Start Menu.
+			<para>Download the quite large all-in-one bundle from <ulink url="http://prdownloads.sourceforge.net/gausssum/GaussSum-&pointversion;.msi?download">here</ulink>. Doubleclick on the .msi file to install it into something like <filename>C:\Program Files\GaussSum</filename>. A shortcut will be added to the Start Menu.
 			</para>
 		</section>
 
@@ -19,30 +19,33 @@
 					&gs; requires &py;, which is a programming language commonly used for scripting.
 				</para>
 				<para>
-					Go to the <ulink url="https://www.python.org/downloads">Python install page</ulink>. Download and run the Windows installer for a recent version of Python 3 (e.g. Python 3.3.2). Install it into something like <filename>C:\Python3.3</filename>. &gs; also works well with Python 3.1 and 3.2.
+					Go to the <ulink url="https://www.python.org/downloads">Python install page</ulink>. Download and run the Windows installer for a recent version of Python 3 (e.g. Python 3.6).
 				</para>
 			</sect2>
 			<sect2 id="WinNumpy" xreflabel="Installing Numpy">
 				<title>Install Numpy</title>
 				<para>
-					&gs; requires Numpy, which is a Python extension that allows efficient matrix algebra.</para>
-				<para>
-					Go to the <ulink url="https://sourceforge.net/projects/numpy/files/NumPy/">Numpy download page</ulink>. Download and run the Windows installer for your version of Python.
+					&gs; requires Numpy, which is a Python extension that allows efficient matrix algebra. You can install this with pip at the command-line: <command>py -m pip install numpy</command>
 				</para>
 			</sect2>
 			<sect2 id="WinMPL" xreflabel="Installing Matplotlib">
 				<title>Install Matplotlib</title>
 				<para>
-					In order to draw the graphs, &gs; requires the Python package Matplotlib.</para> 
+					In order to draw the graphs, &gs; requires the Python package Matplotlib. You can install this with pip at the command-line: <command>py -m pip install matplotlib</command>
+				</para> 
+			</sect2>
+
+			<sect2 id="WinCclib" xreflabel="Install cclib">
+				<title>Install cclib</title>
 				<para>
-					Go to the <ulink url="http://matplotlib.org/downloads.html">Matplotlib download page</ulink>. Download and run the Windows installer for your version of Python.
+					In order to extract information from comp chem log files, the Python package cclib is need. You can install this with pip at the command-line: <command>py -m pip install cclib</command>
 				</para>
 			</sect2>
 
 			<sect2 id="WinGauInstall" xreflabel="Install the GaussSum Python scripts">
 				<title>Install the &gs; Python scripts</title>
 				<para>
-					The scripts can be found <ulink url="http://prdownloads.sourceforge.net/gausssum/GaussSum-&pointversion;.zip?download">here</ulink>. Extract the zip file into something like <filename>C:\Program Files (x86)\GaussSum</filename>.
+					The scripts can be found <ulink url="http://prdownloads.sourceforge.net/gausssum/GaussSum-&pointversion;.zip?download">here</ulink>. Extract the zip file into something like <filename>C:\Program Files\GaussSum</filename>.
 				</para>
 				<para>
 					Create a shortcut on your desktop to <filename>GaussSum.py</filename> (to do this, right-click on an empty part of the desktop, choose New -> Shortcut, browse to the folder where you installed &gs; and choose <filename>GaussSum.py</filename>). To change the icon, right-click on the icon, choose Properties -> General -> Change Icon -> Browse. Find the folder where you installed &gs; and choose <filename>GaussSum.ico</filename>. In addition, change the program used to open &gs; by following these instructions: right-click on the icon, choose Properties -> General -> Opens with -> Change -> PythonW. If you want to set a startup folder, right-click on the icon, choose Properties -> Shortcut -> Start in:, and type the name of the startup folder.
@@ -91,6 +94,10 @@
 			<sect2>
 				<title>Install Matplotlib</title>
                 <para>Matplotlib is a Python package for drawing graphs. It should be available through your package manager. You should install the version for Python3. If it is not available, you should download and build it from source. Instructions are available from the <ulink href="http://matplotlib.org/users/installing.html">Matplotlib website</ulink>.</para>
+			</sect2>
+			<sect2>
+				<title>Install cclib</title>
+				<para>cclib is a Python package for extracting information from comp chem output files. You should install the latest version. This is most easily done with pip. You should use the Python3 version of pip which may be available through your package manager. Once installed, it can be used as follows: <command>pip install cclib --upgrade</command></para>
 			</sect2>
 			<sect2>
 				<title>Download &gs;</title>
