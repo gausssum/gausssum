@@ -319,7 +319,7 @@ def ET(root,screen,logfile,logfilename,
         fileoutput = ""
         for i in range(len(logfile.etenergies)): # For each transition
             temp = [i+1,logfile.etenergies[i],
-                    convertor(logfile.etenergies[i],"cm-1","nm"),
+                    convertor(logfile.etenergies[i],"wavenumber","nm"),
                     logfile.etoscs[i],logfile.etsyms[i],
                     ", ".join(majorCIS[i]),", ".join(minorCIS[i])]
             if orbdata:
@@ -331,14 +331,14 @@ def ET(root,screen,logfile,logfilename,
         outputfile.write("HOMO is "+str(logfile.homos[0]+1))
         if unres:
             outputfile.write("\t%d" % (logfile.homos[1] + 1,))
-        outputfile.write("\nNo.\tEnergy (cm-1)\tWavelength (nm)\tOsc. Strength\tSymmetry\tMajor contribs\tMinor contribs")
+        outputfile.write("\nNo.\tEnergy (wavenumbers)\tWavelength (nm)\tOsc. Strength\tSymmetry\tMajor contribs\tMinor contribs")
         for i in range(NGroups):
             outputfile.write("\t"+groupname[i])
         outputfile.write("\n"+fileoutput)
         outputfile.close()
 
-        endwaveno = convertor(start,"nm","cm-1")
-        startwaveno = convertor(end,"nm","cm-1")
+        endwaveno = convertor(start,"nm","wavenumbers")
+        startwaveno = convertor(end,"nm","wavenumbers")
         t = GaussianSpectrum(startwaveno,endwaveno,numpts,
                              ( logfile.etenergies,[[x*2.174e8/FWHM for x in logfile.etoscs]] ),
                              FWHM)
@@ -349,9 +349,9 @@ def ET(root,screen,logfile,logfilename,
         width=endwaveno-startwaveno
         for x in range(numpts):
             realx=width*x/numpts+startwaveno
-            outputfile.write(str(realx)+"\t"+str(convertor(realx,"cm-1","nm"))+"\t"+str(t.spectrum[0,x]))
+            outputfile.write(str(realx)+"\t"+str(convertor(realx,"wavenumbers","nm"))+"\t"+str(t.spectrum[0,x]))
             if x<len(logfile.etenergies): # Write the oscillator strengths out also
-                outputfile.write("\t\t\t"+str(logfile.etenergies[x])+"\t"+str(convertor(logfile.etenergies[x],"cm-1","nm"))+"\t"+str(logfile.etoscs[x]))
+                outputfile.write("\t\t\t"+str(logfile.etenergies[x])+"\t"+str(convertor(logfile.etenergies[x],"wavenumbers","nm"))+"\t"+str(logfile.etoscs[x]))
             outputfile.write("\n")
         outputfile.close()
 
@@ -360,10 +360,10 @@ def ET(root,screen,logfile,logfilename,
                 screen.write("There are no peaks in this wavelength range!\n")
             else:
                 g = MPLPlot()
-                xvalues_nm = [convertor(x,"cm-1","nm") for x in t.xvalues]
+                xvalues_nm = [convertor(x,"wavenumbers","nm") for x in t.xvalues]
                 g.setlabels("Wavelength (nm)", r"$\epsilon$")
                 g.data(zip(xvalues_nm,t.spectrum[0,:]))
-                energies_nm = [convertor(x,"cm-1","nm") for x in logfile.etenergies]
+                energies_nm = [convertor(x,"wavenumbers","nm") for x in logfile.etenergies]
                 oscdata = [(x, y) for x, y in zip(energies_nm, logfile.etoscs) if start < x < end]
                 g.data(oscdata, vlines=True, y2axis="Oscillator strength")
 
@@ -388,9 +388,9 @@ def ET(root,screen,logfile,logfilename,
         # We use Sigma, the full width at 1/e height.
         #   Delta = Sigma / 2
 
-        endwaveno = convertor(start,"nm","cm-1")
-        startwaveno = convertor(end,"nm","cm-1")
-        sigma = convertor(FWHM, "eV", "cm-1")
+        endwaveno = convertor(start,"nm","wavenumbers")
+        startwaveno = convertor(end,"nm","wavenumbers")
+        sigma = convertor(FWHM, "eV", "wavenumbers")
         Delta = sigma / 2.
 
         prefactor = 1.0 / (2.296e-39 * math.sqrt(math.pi) * Delta)
@@ -416,7 +416,7 @@ def ET(root,screen,logfile,logfilename,
             realx = width * x / numpts + startwaveno
             outputfile.write("%f\t%f\t%f" % (realx, 1.0e7/realx, t.spectrum[0,x]))
             if x < len(logfile.etenergies): # Write the R values out also
-                outputfile.write( "\t\t\t%f\t%f\t%f" % (convertor(logfile.etenergies[x], "cm-1", "nm"),
+                outputfile.write( "\t\t\t%f\t%f\t%f" % (convertor(logfile.etenergies[x], "wavenumbers", "nm"),
                                                         logfile.etenergies[x],logfile.etrotats[x]) )
             outputfile.write("\n")
         outputfile.close()
@@ -432,9 +432,9 @@ def ET(root,screen,logfile,logfilename,
                 g = MPLPlot()
                 g.setlabels("Wavelength (nm)", r"$\epsilon$")
 
-                xvalues_nm = [convertor(x,"cm-1","nm") for x in t.xvalues]
+                xvalues_nm = [convertor(x,"wavenumbers","nm") for x in t.xvalues]
                 g.data(zip(xvalues_nm,t.spectrum[0,:]))
-                energies_nm = [convertor(x,"cm-1","nm") for x in logfile.etenergies]
+                energies_nm = [convertor(x,"wavenumbers","nm") for x in logfile.etenergies]
                 oscdata = [(x, y) for x, y in zip(energies_nm, logfile.etrotats) if start < x < end]
                 g.data(oscdata, vlines=True, y2axis="R (length) / $10^{-40}$")
 

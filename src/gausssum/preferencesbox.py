@@ -14,11 +14,11 @@
 
 from tkinter import *   # GUI stuff
 import tkinter.messagebox     # For the About Dialog
-import tkinter.simpledialog
+from tkinter.simpledialog import Dialog
 
 import os
 
-class PreferencesPopupBox(simpledialog.Dialog):
+class PreferencesPopupBox(Dialog):
 
     def __init__(self, parent, settings, title = None): # Override (just to set the geometry!)
 
